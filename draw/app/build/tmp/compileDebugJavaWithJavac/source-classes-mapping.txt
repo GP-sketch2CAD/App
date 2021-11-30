@@ -1,8 +1,0 @@
-gachon/termproject/finalproject/BuildConfig.java
- gachon.termproject.finalproject.BuildConfig
-gachon/termproject/finalproject/MainActivity.java
- gachon.termproject.finalproject.MainActivity
- gachon.termproject.finalproject.MainActivity$1
- gachon.termproject.finalproject.MainActivity$2
- gachon.termproject.finalproject.MainActivity$MyView
- gachon.termproject.finalproject.MainActivity$Point
