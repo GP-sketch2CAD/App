@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "gachon.termproject.finalproject",
+  "applicationId": "com.example.draw",
   "variantName": "debug",
   "elements": [
     {
