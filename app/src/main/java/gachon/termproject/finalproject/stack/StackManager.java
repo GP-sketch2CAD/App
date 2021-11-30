@@ -1,18 +1,27 @@
 package gachon.termproject.finalproject.stack;
 
+import android.os.Handler;
+
 import java.util.ArrayList;
 import java.util.Stack;
+
+import gachon.termproject.finalproject.MainActivity;
+import gachon.termproject.finalproject.MyView;
 
 public class StackManager {
 
     private long timeThreshold = 500; // 일단 1초로 잡고 나중에 수정
+    Converter converter = new Converter();
     Stack<DrawElement> drawStack;
     Stack<Object> objStack;
-
+    MyView myView;
 
     public StackManager() {
         this.drawStack = new Stack<DrawElement>();
         this.objStack = new Stack<Object>();
+    }
+    public void setView(MyView myView){
+        this.myView = myView;
     }
 
     public void push(ArrayList<Point> points, long startT, long endT) {
@@ -33,7 +42,16 @@ public class StackManager {
             }
 
         }
-        // TODO: convert 함수 만들고 얼마 뒤에 콜하기
+
+        // 1.5초 뒤 변환
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                convertDraw2Obj();
+            }
+        }, 1500);
+
+
     }
 
     public Object pop() {
@@ -45,12 +63,26 @@ public class StackManager {
     public ArrayList<Point> getAllPoints() {
         ArrayList<Point> allPoints = new ArrayList<Point>();
 
-        // TODO: 나중에 obj도 추가해줘야함
+        // TODO: 나중에 수정하기
+        for (Object obj : objStack) {
+            allPoints.addAll((ArrayList<Point>) obj);
+        }
+
         for (DrawElement de : drawStack) {
             allPoints.addAll(de.points);
         }
 
+
         return allPoints;
+    }
+
+    private void convertDraw2Obj() {
+        while (!drawStack.empty()) {
+            // TODO: 다시 수정하기
+            DrawElement de = drawStack.pop();
+            objStack.push(converter.convertPoints2Obj(de.points));
+        }
+        myView.invalidate();
     }
 
 }
