@@ -1,6 +1,6 @@
 package gachon.termproject.finalproject.stack;
 
-public class Point{
+public class Point implements Cloneable{
     public float x;
     public float y;
     public boolean check;
@@ -12,5 +12,15 @@ public class Point{
         this.y = y;
         this.check = check;
         this.color = color;
+    }
+
+    @Override
+    public Point clone(){
+        try {
+            return (Point)super.clone();
+        } catch (Exception e){
+          return null;
+        }
+
     }
 }

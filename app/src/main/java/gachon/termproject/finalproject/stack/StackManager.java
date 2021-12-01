@@ -2,6 +2,7 @@ package gachon.termproject.finalproject.stack;
 
 import android.os.Handler;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -10,15 +11,15 @@ import gachon.termproject.finalproject.MyView;
 
 public class StackManager {
 
-    private long timeThreshold = 500; // 일단 1초로 잡고 나중에 수정
+    private long timeThreshold = 750; // 일단 1초로 잡고 나중에 수정
     Converter converter = new Converter();
-    Stack<DrawElement> drawStack;
-    Stack<Object> objStack;
+    ArrayDeque<DrawElement> drawStack;
+    ArrayDeque<Object> objStack;
     MyView myView;
 
     public StackManager() {
-        this.drawStack = new Stack<DrawElement>();
-        this.objStack = new Stack<Object>();
+        this.drawStack = new ArrayDeque<DrawElement>();
+        this.objStack = new ArrayDeque<Object>();
     }
     public void setView(MyView myView){
         this.myView = myView;
@@ -27,7 +28,7 @@ public class StackManager {
     public void push(ArrayList<Point> points, long startT, long endT) {
         DrawElement newElement = new DrawElement(points, startT, endT);
 
-        if (drawStack.empty()) {
+        if (drawStack.size() == 0) {
             drawStack.push(newElement);
         } else {
             DrawElement lastElement = drawStack.pop();
@@ -44,19 +45,14 @@ public class StackManager {
         }
 
         // 1.5초 뒤 변환
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                convertDraw2Obj();
-            }
-        }, 1500);
+        callConvertDraw2Obj(1500);
 
 
     }
 
     public Object pop() {
-        if (!drawStack.empty()) return drawStack.pop();
-        else if (!objStack.empty()) return objStack.pop();
+        if (drawStack.size() > 0) return drawStack.pop();
+        else if (objStack.size() > 0) return objStack.pop();
         else return null;
     }
 
@@ -72,15 +68,31 @@ public class StackManager {
             allPoints.addAll(de.points);
         }
 
-
         return allPoints;
     }
 
+    private void callConvertDraw2Obj(long time){
+        // 1.5초 뒤 변환
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                convertDraw2Obj();
+            }
+        }, time);
+    }
+
     private void convertDraw2Obj() {
-        while (!drawStack.empty()) {
-            // TODO: 다시 수정하기
-            DrawElement de = drawStack.pop();
+        long lt;
+
+        if(drawStack.size() == 0) return;
+        for(DrawElement de: drawStack){
+            lt = System.currentTimeMillis() - de.endTime;
+            if(lt < 2*timeThreshold) {
+                callConvertDraw2Obj(1000);
+                return;
+            }
             objStack.push(converter.convertPoints2Obj(de.points));
+            drawStack.pollFirst();
         }
         myView.invalidate();
     }

@@ -43,7 +43,6 @@ public class MyView extends View {
             if (!points.get(i).check)
                 continue;
             canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
-
         }
     }
 
