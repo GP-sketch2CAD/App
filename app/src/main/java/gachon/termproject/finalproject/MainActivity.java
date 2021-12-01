@@ -21,7 +21,7 @@ import gachon.termproject.finalproject.stack.StackManager;
 public class MainActivity extends AppCompatActivity {
 
     StackManager stackManager = new StackManager();
-    Button clearbtn;
+    Button undobtn;
     LinearLayout drawlinear;
 
 
@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
 
-        clearbtn = findViewById(R.id.clear_btn);
+        undobtn = findViewById(R.id.undo_btn);
         drawlinear = findViewById(R.id.draw_linear);
-        clearbtn.setOnClickListener(new View.OnClickListener() { //undo 버튼 눌렸을때
+        undobtn.setOnClickListener(new View.OnClickListener() { //undo 버튼 눌렸을때
             @Override
             public void onClick(View v) {
                 stackManager.pop();
