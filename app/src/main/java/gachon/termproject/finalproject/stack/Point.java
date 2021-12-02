@@ -23,4 +23,8 @@ public class Point implements Cloneable{
         }
 
     }
+    public float getPointX()
+    {
+        return this.x;
+    }
 }

@@ -1,14 +1,21 @@
 package gachon.termproject.finalproject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
@@ -16,6 +23,8 @@ import gachon.termproject.finalproject.stack.StackManager;
 public class MyView extends View {
     ArrayList<Point> points = new ArrayList<Point>();
     StackManager stackManager;
+    Bitmap bitmap = null;
+    private DigitClassifier digitClassifier = new DigitClassifier(this);
     int color = Color.BLACK;
 
     long startTime;
@@ -24,10 +33,16 @@ public class MyView extends View {
     public MyView(Context context, StackManager stackManager) {
         super(context);
         this.stackManager = stackManager;
+        this.digitClassifier.initialize().addOnFailureListener((OnFailureListener)null);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+//        if (bitmap == null) {
+//            bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            canvas.setBitmap(bitmap);
+//        }
         Paint p = new Paint();
         p.setStrokeWidth(10);
         Log.w("2", "2");
@@ -61,6 +76,7 @@ public class MyView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 endTime = System.currentTimeMillis();
+                this.classifyDrawing();
                 stackManager.push((ArrayList<Point>) points.clone(), startTime, endTime);
                 points.clear();
                 break;
@@ -68,4 +84,29 @@ public class MyView extends View {
         invalidate();
         return true;
     }
+
+    private final void classifyDrawing() {
+        Bitmap abc= Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
+        
+        if (abc != null && this.digitClassifier.isInitialized()) {
+            this.digitClassifier.classifyAsync(abc).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
+                // $FF: synthetic method
+                // $FF: bridge method
+                public void onSuccess(Object var1) {
+                    this.onSuccess((String)var1);
+                }
+
+                public final void onSuccess(String resultText) {
+                    Log.e("resultText", resultText);
+                }
+            })).addOnFailureListener((OnFailureListener)(new OnFailureListener() {
+                public final void onFailure(Exception e) {
+
+                    Log.e("MainActivity", "Error classifying drawing.", (Throwable)e);
+                }
+            }));
+        }
+
+    }
+
 }
