@@ -38,26 +38,30 @@ public class MyView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        if (bitmap == null) {
-//            bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(),
-//                    Bitmap.Config.ARGB_8888);
-//            canvas.setBitmap(bitmap);
-//        }
+        bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas c=new Canvas(bitmap);
         Paint p = new Paint();
         p.setStrokeWidth(10);
+        p.setColor(Color.WHITE);
+        Paint p1 = new Paint();
+        p1.setStrokeWidth(10);
+        p1.setColor(Color.BLACK);
         Log.w("2", "2");
 
         ArrayList<Point> toDraw = stackManager.getAllPoints();
         for (int i = 1; i < toDraw.size(); i++) {
             if (!toDraw.get(i).check)
                 continue;
-            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
+            c.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
+            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
 
         }
         for (int i = 1; i < points.size(); i++) {
             if (!points.get(i).check)
                 continue;
-            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
+            c.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
+            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p1);
         }
     }
 
@@ -85,11 +89,11 @@ public class MyView extends View {
         return true;
     }
 
-    private final void classifyDrawing() {
+    private void classifyDrawing() {
         Bitmap abc= Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
-        
+
         if (abc != null && this.digitClassifier.isInitialized()) {
-            this.digitClassifier.classifyAsync(abc).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
+            this.digitClassifier.classifyAsync(bitmap).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
                 // $FF: synthetic method
                 // $FF: bridge method
                 public void onSuccess(Object var1) {
