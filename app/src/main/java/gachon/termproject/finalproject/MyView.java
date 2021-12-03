@@ -41,15 +41,32 @@ public class MyView extends View {
         bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(),
                 Bitmap.Config.ARGB_8888);
         Canvas c=new Canvas(bitmap);
-        Paint p = new Paint();
-        p.setStrokeWidth(10);
-        p.setColor(Color.WHITE);
         Paint p1 = new Paint();
         p1.setStrokeWidth(10);
-        p1.setColor(Color.BLACK);
+        p1.setColor(Color.WHITE);
+        Paint p = new Paint();
+        p.setStrokeWidth(10);
         Log.w("2", "2");
 
-        ArrayList<Point> toDraw = stackManager.getAllPoints();
+
+        // 벽 그리기
+        ArrayList<int[]> lines = stackManager.getWallPoint();
+        for(int[] line: lines){
+            canvas.drawLine(line[0], line[1], line[2], line[3], p);
+        }
+
+        // 기둥 그리기
+        lines = stackManager.getColumnsPoint();
+        Paint b = new Paint();
+        b.setStrokeWidth(10);
+        b.setColor(Color.BLUE);
+        for(int[] rec: lines){
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], b);
+        }
+
+
+        // drawStack 있는 것들
+        ArrayList<Point> toDraw = stackManager.getDrawPoint();
         for (int i = 1; i < toDraw.size(); i++) {
             if (!toDraw.get(i).check)
                 continue;
@@ -57,6 +74,8 @@ public class MyView extends View {
             canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
 
         }
+
+        // 실시간으로 그려지고 있는 것들
         for (int i = 1; i < points.size(); i++) {
             if (!points.get(i).check)
                 continue;

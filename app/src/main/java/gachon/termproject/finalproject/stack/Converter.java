@@ -1,8 +1,14 @@
 package gachon.termproject.finalproject.stack;
 
+
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+
+import gachon.termproject.finalproject.ArctObj.Coord;
+import gachon.termproject.finalproject.ArctObj.NemoColumn;
+import gachon.termproject.finalproject.ArctObj.NemoRoom;
 
 public class Converter {
     double epsilon = 50.;
@@ -11,8 +17,8 @@ public class Converter {
 
     }
 
-    public Object convertPoints2Obj(ArrayList<Point> points) {
-        ArrayList<Point> temp = null;
+    public Object convertPoints2Obj(ArrayList<Point> points, StackManager stackManager) {
+        Object obj = null;
 
         if (isNumber(points)) {
 
@@ -21,19 +27,32 @@ public class Converter {
             // 더글라스파커랑 상극이야
         } else {
             // 변환 한번 해주자
-            temp = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
-            temp = Line2Nemo.nemoNemo(temp);
+            obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
+            obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
 
             if (isWindow(points)) {
 
             } else if (isColumn(points)) {
+                Log.e("arctOBJ", "column");
+                int LCidx = 0;
+                Point[] border = MacGyver.getBorder(points);
+                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
+
+                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                obj = new NemoColumn(border, linkC, LCidx);
 
             } else if (isWall(points)) {
+                // 만나는 벽이 있는지 확인
+                int LCidx = 0;
+                Point[] border = MacGyver.getBorder(points);
+                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
 
+                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                obj = new NemoRoom(border, linkC, LCidx);
             }
         }
 
-        return temp;
+        return obj;
     }
 
     private boolean isDoor(ArrayList<Point> points) {
@@ -45,11 +64,29 @@ public class Converter {
     }
 
     private boolean isColumn(ArrayList<Point> points) {
+        Point[] border = MacGyver.getBorder(points);
+        ArrayList<Point> sLine = (ArrayList<Point>) Line2Straight.douglasPeucker(points, epsilon/2);
+        int check = 0;
+
+        float[] LTRB = new float[]{border[0].x, border[0].y, border[2].x, border[2].y};
+        float[] RTLB = new float[]{border[3].x, border[3].y, border[1].x, border[1].y};
+
+        for (int i = 0; i < sLine.size() - 1; i++) {
+            if (sLine.get(i).check == false && sLine.get(i + 1).check == true) {
+                float[] ml = new float[]{sLine.get(i).x, sLine.get(i).y, sLine.get(i + 1).x, sLine.get(i + 1).y};
+                if (MacGyver.isCross(LTRB, ml)) check++;
+                if (MacGyver.isCross(RTLB, ml)) check++;
+            }
+        }
+
+        if (check > 3) return true;
         return false;
     }
 
     private boolean isWall(ArrayList<Point> points) {
-        return false;
+        if (points.size() < 4) return false;
+        // TODO: 일단 넓이로 좀 해볼까.....
+        return true;
     }
 
     private boolean isNumber(ArrayList<Point> points) {
