@@ -90,10 +90,10 @@ public class MyView extends View {
     }
 
     private void classifyDrawing() {
-        Bitmap abc= Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap abc= Bitmap.createBitmap(bitmap,0,0,this.getWidth(), this.getHeight());
 
         if (abc != null && this.digitClassifier.isInitialized()) {
-            this.digitClassifier.classifyAsync(bitmap).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
+            this.digitClassifier.classifyAsync(abc).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
                 // $FF: synthetic method
                 // $FF: bridge method
                 public void onSuccess(Object var1) {
