@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.MainActivity;
 import gachon.termproject.finalproject.MyView;
 
@@ -21,7 +22,8 @@ public class StackManager {
         this.drawStack = new ArrayDeque<DrawElement>();
         this.objStack = new ArrayDeque<Object>();
     }
-    public void setView(MyView myView){
+
+    public void setView(MyView myView) {
         this.myView = myView;
     }
 
@@ -71,7 +73,40 @@ public class StackManager {
         return allPoints;
     }
 
-    private void callConvertDraw2Obj(long time){
+    public ArrayList<Point> getDrawPoint() {
+        ArrayList<Point> allPoints = new ArrayList<Point>();
+
+        for (DrawElement de : drawStack) {
+            allPoints.addAll(de.points);
+        }
+
+        return allPoints;
+    }
+
+    public ArrayList<int[]> getWallPoint() {
+        ArrayList<int[]> result = new ArrayList<>();
+
+        for (Object obj : objStack) {
+            if (obj instanceof NemoRoom) {
+                for (int i = 0; i < 3; i++) {
+                    int[] temp = new int[]{((NemoRoom) obj).coords[i].getX(),
+                                            ((NemoRoom) obj).coords[i].getY(),
+                                            ((NemoRoom) obj).coords[i+1].getX(),
+                                            ((NemoRoom) obj).coords[i+1].getY()};
+                    result.add(temp);
+                }
+                result.add(new int[]{((NemoRoom) obj).coords[3].getX(),
+                                    ((NemoRoom) obj).coords[3].getY(),
+                                    ((NemoRoom) obj).coords[0].getX(),
+                                    ((NemoRoom) obj).coords[0].getY()});
+            }
+        }
+
+        return result;
+    }
+
+
+    private void callConvertDraw2Obj(long time) {
         // 1.5초 뒤 변환
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -84,14 +119,14 @@ public class StackManager {
     private void convertDraw2Obj() {
         long lt;
 
-        if(drawStack.size() == 0) return;
-        for(DrawElement de: drawStack){
+        if (drawStack.size() == 0) return;
+        for (DrawElement de : drawStack) {
             lt = System.currentTimeMillis() - de.endTime;
-            if(lt < 2*timeThreshold) {
+            if (lt < 2 * timeThreshold) {
                 callConvertDraw2Obj(1000);
                 return;
             }
-            objStack.push(converter.convertPoints2Obj(de.points));
+            objStack.push(converter.convertPoints2Obj(de.points, this));
             drawStack.pollFirst();
         }
         myView.invalidate();

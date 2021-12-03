@@ -1,8 +1,11 @@
 package gachon.termproject.finalproject.stack;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+
+import gachon.termproject.finalproject.ArctObj.Coord;
+import gachon.termproject.finalproject.ArctObj.NemoRoom;
 
 public class Converter {
     double epsilon = 50.;
@@ -11,8 +14,8 @@ public class Converter {
 
     }
 
-    public Object convertPoints2Obj(ArrayList<Point> points) {
-        ArrayList<Point> temp = null;
+    public Object convertPoints2Obj(ArrayList<Point> points, StackManager stackManager) {
+        Object temp = null;
 
         if (isNumber(points)) {
 
@@ -22,14 +25,20 @@ public class Converter {
         } else {
             // 변환 한번 해주자
             temp = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
-            temp = Line2Nemo.nemoNemo(temp);
+            temp = Line2Nemo.nemoNemo((ArrayList<Point>) temp);
 
             if (isWindow(points)) {
 
             } else if (isColumn(points)) {
 
             } else if (isWall(points)) {
+                // 만나는 벽이 있는지 확인
+                int LCidx = 0;
+                Point[] border = MacGyver.getBorder(points);
+                Coord linkC = new Coord((int)(border[0].x),(int)(border[0].y));
 
+                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                temp = new NemoRoom(border, linkC, LCidx);
             }
         }
 
@@ -49,7 +58,7 @@ public class Converter {
     }
 
     private boolean isWall(ArrayList<Point> points) {
-        return false;
+        return true;
     }
 
     private boolean isNumber(ArrayList<Point> points) {

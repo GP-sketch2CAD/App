@@ -1,5 +1,7 @@
 package gachon.termproject.finalproject.stack;
 
+import android.graphics.Color;
+
 public class Point implements Cloneable{
     public float x;
     public float y;
@@ -12,6 +14,14 @@ public class Point implements Cloneable{
         this.y = y;
         this.check = check;
         this.color = color;
+    }
+
+    public Point(float x, float y)
+    {
+        this.x = x;
+        this.y = y;
+        this.check = false;
+        this.color = Color.BLACK;
     }
 
     @Override

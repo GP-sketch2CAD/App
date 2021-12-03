@@ -32,13 +32,21 @@ public class MyView extends View {
         p.setStrokeWidth(10);
         Log.w("2", "2");
 
-        ArrayList<Point> toDraw = stackManager.getAllPoints();
+        ArrayList<int[]> lines = stackManager.getWallPoint();
+        for(int[] line: lines){
+            canvas.drawLine(line[0], line[1], line[2], line[3], p);
+        }
+
+        // drawStack 있는 것들
+        ArrayList<Point> toDraw = stackManager.getDrawPoint();
         for (int i = 1; i < toDraw.size(); i++) {
             if (!toDraw.get(i).check)
                 continue;
             canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
 
         }
+
+        // 실시간으로 그려지고 있는 것들
         for (int i = 1; i < points.size(); i++) {
             if (!points.get(i).check)
                 continue;
