@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.MainActivity;
 import gachon.termproject.finalproject.MyView;
@@ -90,18 +91,33 @@ public class StackManager {
             if (obj instanceof NemoRoom) {
                 for (int i = 0; i < 3; i++) {
                     int[] temp = new int[]{((NemoRoom) obj).coords[i].getX(),
-                                            ((NemoRoom) obj).coords[i].getY(),
-                                            ((NemoRoom) obj).coords[i+1].getX(),
-                                            ((NemoRoom) obj).coords[i+1].getY()};
+                            ((NemoRoom) obj).coords[i].getY(),
+                            ((NemoRoom) obj).coords[i + 1].getX(),
+                            ((NemoRoom) obj).coords[i + 1].getY()};
                     result.add(temp);
                 }
                 result.add(new int[]{((NemoRoom) obj).coords[3].getX(),
-                                    ((NemoRoom) obj).coords[3].getY(),
-                                    ((NemoRoom) obj).coords[0].getX(),
-                                    ((NemoRoom) obj).coords[0].getY()});
+                        ((NemoRoom) obj).coords[3].getY(),
+                        ((NemoRoom) obj).coords[0].getX(),
+                        ((NemoRoom) obj).coords[0].getY()});
             }
         }
 
+        return result;
+    }
+
+    public ArrayList<int[]> getColumnsPoint() {
+        ArrayList<int[]> result = new ArrayList<>();
+
+        for (Object obj : objStack) {
+            if (obj instanceof NemoColumn) {
+                int[] temp = new int[]{((NemoColumn) obj).coords[0].getX(),
+                        ((NemoColumn) obj).coords[0].getY(),
+                        ((NemoColumn) obj).coords[2].getX(),
+                        ((NemoColumn) obj).coords[2].getY()};
+                result.add(temp);
+            }
+        }
         return result;
     }
 

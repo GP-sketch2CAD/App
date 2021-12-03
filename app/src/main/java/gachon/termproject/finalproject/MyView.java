@@ -30,12 +30,22 @@ public class MyView extends View {
     protected void onDraw(Canvas canvas) {
         Paint p = new Paint();
         p.setStrokeWidth(10);
-        Log.w("2", "2");
 
+        // 벽 그리기
         ArrayList<int[]> lines = stackManager.getWallPoint();
         for(int[] line: lines){
             canvas.drawLine(line[0], line[1], line[2], line[3], p);
         }
+
+        // 기둥 그리기
+        lines = stackManager.getColumnsPoint();
+        Paint b = new Paint();
+        b.setStrokeWidth(10);
+        b.setColor(Color.BLUE);
+        for(int[] rec: lines){
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], b);
+        }
+
 
         // drawStack 있는 것들
         ArrayList<Point> toDraw = stackManager.getDrawPoint();
