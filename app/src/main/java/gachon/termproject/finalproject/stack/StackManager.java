@@ -2,10 +2,12 @@ package gachon.termproject.finalproject.stack;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
@@ -18,6 +20,8 @@ public class StackManager {
     Converter converter = new Converter();
     ArrayDeque<DrawElement> drawStack;
     ArrayDeque<Object> objStack;
+    ArrayList<Point[]> bt = new ArrayList<Point[]>();
+    boolean isruq;
     MyView myView;
 
     public StackManager() {
@@ -33,14 +37,49 @@ public class StackManager {
         DrawElement newElement = new DrawElement(points, startT, endT);
 
         if (drawStack.size() == 0) {
+            bt.clear();
             drawStack.push(newElement);
+            Point[] around = MacGyver.getBorder( newElement.points);
+            bt.add(around);
         } else {
             DrawElement lastElement = drawStack.pop();
 
             if (newElement.startTime - lastElement.endTime < timeThreshold) {
-                lastElement.addPoints(points);
-                lastElement.endTime = newElement.endTime;
-                drawStack.push(lastElement);
+                isruq=false;
+
+                for(Point p : lastElement.points)
+                {
+                    for(Point p2 : newElement.points)
+                    {
+//                        System.out.println((int)p.x);
+//                        System.out.println((int)p2.x);
+                        if((((int) (p.x) == (int) (p2.x)) && ((int)(p.y) == (int) (p2.y))))
+                        {
+                            isruq=true;
+                        }
+                    }
+                    System.out.println(isruq);
+                }
+                if(!(isruq))
+                {
+                    Log.e("resultText", "1111111111");
+                    Point[] around = MacGyver.getBorder( newElement.points);
+                    bt.add(around);
+                    lastElement.addPoints(points);
+                    lastElement.endTime = newElement.endTime;
+                    drawStack.push(lastElement);
+                }
+                else {
+                    bt.remove(bt.size()-1);
+                    lastElement.addPoints(points);
+                    lastElement.endTime = newElement.endTime;
+                    drawStack.push(lastElement);
+                    Point[] around = MacGyver.getBorder( lastElement.points);
+                    bt.add(around);
+                }
+//
+
+
             } else {
                 drawStack.push(lastElement);
                 drawStack.push(newElement);
@@ -143,10 +182,19 @@ public class StackManager {
                 callConvertDraw2Obj(1000);
                 return;
             }
+            for(int i=0;i<bt.size();i++) {
+                System.out.println(bt.get(i)[0].x);
+                try {
+                    myView.classifyDrawing(bt.get(i));
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            }
             objStack.push(converter.convertPoints2Obj(de.points, this));
             drawStack.pollFirst();
         }
         myView.invalidate();
     }
+
 
 }

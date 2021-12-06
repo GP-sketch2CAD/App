@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.Interpreter.Options;
@@ -86,15 +87,16 @@ public final class DigitClassifier {
         return (ByteBuffer)var10;
     }
 
-    private final String classify(Bitmap bitmap) throws Throwable {
+    public final String classify(Bitmap bitmap) throws Throwable {
         boolean var2 = this.isInitialized;
         if (!var2) {
             String var23 = "TF Lite Interpreter is not initialized yet.";
             throw (Throwable)(new IllegalStateException(var23.toString()));
         } else {
-
+            System.out.println(bitmap);
             Bitmap resizedImage = Bitmap.createScaledBitmap(bitmap, this.inputImageWidth, this.inputImageHeight, true);
             ByteBuffer byteBuffer = this.convertBitmapToByteBuffer(resizedImage);
+            System.out.println(byteBuffer);
             byte var5 = 1;
             float[][] var6 = new float[var5][];
 
@@ -103,13 +105,12 @@ public final class DigitClassifier {
                 var6[var7] = var19;
             }
 
-            float[][] output = (float[][])var6;
             Interpreter var10000 = this.interpreter;
             if (var10000 != null) {
-                var10000.run(byteBuffer, output);
+                var10000.run(byteBuffer, (float[][])var6);
             }
 
-            float[] result = output[0];
+            float[] result = ((float[][])var6)[0];
             Iterable $this$maxBy$iv = (Iterable) ArraysKt.getIndices(result);
             Iterator iterator$iv$iv = $this$maxBy$iv.iterator();
             Object var34;
@@ -140,20 +141,20 @@ public final class DigitClassifier {
             int maxIndex = (Integer)var34 != null ? (Integer)var34 : -1;
             String var29 = "Predicion Result: %d\nConfidence: %2f";
             Object[] var30 = new Object[]{maxIndex, result[maxIndex]};
-            this.finalresult.add(maxIndex);
-            Log.e("result11", String.valueOf(this.finalresult));
             String var35 = String.format(var29, Arrays.copyOf(var30, var30.length));
             String resultString = var35;
+            System.out.println(var35);
             return resultString;
         }
     }
 
-    public final Task classifyAsync( final Bitmap bitmap) {
+    public final Task classifyAsync( Bitmap bitmap) {
         final TaskCompletionSource task = new TaskCompletionSource();
         this.executorService.execute((Runnable)(new Runnable() {
             public final void run() {
                 String result = null;
                 try {
+                    System.out.println(bitmap+"11");
                     result = DigitClassifier.this.classify(bitmap);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -179,6 +180,7 @@ public final class DigitClassifier {
     }
 
     private final ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
+        System.out.println(bitmap+"22");
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(this.modelInputSize);
         byteBuffer.order(ByteOrder.nativeOrder());
         int[] pixels = new int[this.inputImageWidth * this.inputImageHeight];

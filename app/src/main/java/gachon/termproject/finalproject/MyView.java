@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import gachon.termproject.finalproject.stack.MacGyver;
 import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
 
@@ -70,8 +71,8 @@ public class MyView extends View {
         for (int i = 1; i < toDraw.size(); i++) {
             if (!toDraw.get(i).check)
                 continue;
-            c.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
-            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
+            c.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
+            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
 
         }
 
@@ -79,8 +80,8 @@ public class MyView extends View {
         for (int i = 1; i < points.size(); i++) {
             if (!points.get(i).check)
                 continue;
-            c.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
-            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p1);
+            c.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p1);
+            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
         }
     }
 
@@ -99,7 +100,6 @@ public class MyView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 endTime = System.currentTimeMillis();
-                this.classifyDrawing();
                 stackManager.push((ArrayList<Point>) points.clone(), startTime, endTime);
                 points.clear();
                 break;
@@ -108,28 +108,14 @@ public class MyView extends View {
         return true;
     }
 
-    private void classifyDrawing() {
-        Bitmap abc= Bitmap.createBitmap(bitmap,0,0,this.getWidth(), this.getHeight());
+    public void classifyDrawing(Point[] around) throws Throwable {
+        Bitmap abc= Bitmap.createBitmap(bitmap,(int)around[0].x-10,(int)around[0].y-10,(int)(around[2].x-around[0].x+20), (int)(around[1].y-around[0].y+20));
 
         if (abc != null && this.digitClassifier.isInitialized()) {
-            this.digitClassifier.classifyAsync(abc).addOnSuccessListener((OnSuccessListener)(new OnSuccessListener() {
-                // $FF: synthetic method
-                // $FF: bridge method
-                public void onSuccess(Object var1) {
-                    this.onSuccess((String)var1);
-                }
-
-                public final void onSuccess(String resultText) {
-                    Log.e("resultText", resultText);
-                }
-            })).addOnFailureListener((OnFailureListener)(new OnFailureListener() {
-                public final void onFailure(Exception e) {
-
-                    Log.e("MainActivity", "Error classifying drawing.", (Throwable)e);
-                }
-            }));
+            String a= this.digitClassifier.classify(abc);
+            Log.e("resultText", a);
         }
-
     }
 
 }
+
