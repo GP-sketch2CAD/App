@@ -9,6 +9,7 @@ import java.util.List;
 import gachon.termproject.finalproject.ArctObj.Coord;
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
+import gachon.termproject.finalproject.ArctObj.NemoWindow;
 
 public class Converter {
     double epsilon = 50.;
@@ -21,18 +22,27 @@ public class Converter {
         Object obj = null;
 
         if (isNumber(points)) {
-
-        } else if (isDoor(points)) {
-            // 나중에 모델 만들어야할듯
-            // 더글라스파커랑 상극이야
-        } else {
+        }
+        else {
             // 변환 한번 해주자
             obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
-            //obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
+            // obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
+            if (isDoor(points, stackManager)){
+                Log.e("arctOBJ", "door");
+                Point[] door = MacGyver.getTriangle(points, stackManager);
+                System.out.println(door[0].x + " " + door[0].y);
+                System.out.println(door[1].x + " " + door[1].y);
+                System.out.println(door[2].x + " " + door[2].y);
+            } else if (isWindow(points, stackManager)) {
+                Log.e("arctOBJ", "window");
+                int LCidx = 0;
+                Point[] border = MacGyver.getBorder(points);
+                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
 
-            if (isWindow(points)) {
+                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                obj = new NemoWindow(border, linkC, LCidx);
 
-            } else if (isColumn(points)) {
+            }else if (isColumn(points)) {
                 Log.e("arctOBJ", "column");
                 int LCidx = 0;
                 Point[] border = MacGyver.getBorder(points);
@@ -55,11 +65,50 @@ public class Converter {
         return obj;
     }
 
-    private boolean isDoor(ArrayList<Point> points) {
+    private boolean isDoor(ArrayList<Point> points, StackManager sm) {
+        if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() == 3 && !sm.objStack.isEmpty()) {
+            Point[] door = MacGyver.getTriangle(points, sm);
+            if(door[0]!=null && door[1]!=null && door[2]!=null){
+                return true;
+            }
+        }
         return false;
     }
 
-    private boolean isWindow(ArrayList<Point> points) {
+    private boolean isWindow(ArrayList<Point> points, StackManager sm) {
+        Point[] border = MacGyver.getBorder(points);
+        for (Object obj : sm.objStack) {
+            if (obj instanceof NemoRoom) {
+                int i = 0;
+                Point[] room = new Point[4];
+                for (Coord c : ((NemoRoom) obj).coords) {
+                    room[i] = new Point(c.getX(), c.getY());
+                    i++;
+                }
+                if((room[0].x > border[0].x && room[0].x < border[2].x) || (room[0].y > border[0].y && room[0].y < border[2].y)
+                        || (room[2].x > border[0].x && room[2].x < border[2].x) || (room[1].y > border[0].y && room[1].y < border[2].y)){
+                    // 여러 방 객체 중 어떤 방의 창문인지 확인
+                    if(border[1].y - border[0].y > border[2].x - border[1].x){
+                        // 왼쪽 오른쪽 창문
+                        if(border[0].y > room[0].y && border[1].y < room[1].y){
+                            // 왼쪽, 오른쪽 벽 안에 있으면
+                            if((room[0].x > border[0].x && room[0].x < border[2].x) || (room[2].x > border[0].x && room[2].x < border[2].x)){
+                                return true;
+                            }
+                        }
+                    }else{
+                        // 위 아래 창문
+                        if(border[0].x > room[0].x && border[2].x < room[3].x){
+                            // 방의 가로 길이보다 작으면
+                            if((room[0].y > border[0].y && room[0].y < border[2].y) || room[1].y > border[0].y && room[1].y < border[2].y){
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
         return false;
     }
 

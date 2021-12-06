@@ -46,6 +46,16 @@ public class MyView extends View {
             canvas.drawRect(rec[0], rec[1], rec[2], rec[3], b);
         }
 
+        //창문 그리기
+        lines = stackManager.getWindowPoint();
+        Paint c = new Paint();
+        c.setStrokeWidth(5);
+        c.setColor(Color.YELLOW);
+        for(int[] rec: lines){
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c);
+        }
+
+
 
         // drawStack 있는 것들
         ArrayList<Point> toDraw = stackManager.getDrawPoint();
