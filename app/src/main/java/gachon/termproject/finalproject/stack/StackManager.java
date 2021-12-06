@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
+import gachon.termproject.finalproject.ArctObj.NemoWindow;
 import gachon.termproject.finalproject.MainActivity;
 import gachon.termproject.finalproject.MyView;
 
@@ -155,6 +156,21 @@ public class StackManager {
                         ((NemoColumn) obj).coords[0].getY(),
                         ((NemoColumn) obj).coords[2].getX(),
                         ((NemoColumn) obj).coords[2].getY()};
+                result.add(temp);
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<int[]> getWindowPoint() {
+        ArrayList<int[]> result = new ArrayList<>();
+
+        for (Object obj : objStack) {
+            if (obj instanceof NemoWindow) {
+                int[] temp = new int[]{((NemoWindow) obj).coords[0].getX(),
+                        ((NemoWindow) obj).coords[0].getY(),
+                        ((NemoWindow) obj).coords[2].getX(),
+                        ((NemoWindow) obj).coords[2].getY()};
                 result.add(temp);
             }
         }

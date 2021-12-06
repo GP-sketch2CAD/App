@@ -27,6 +27,132 @@ public class MacGyver {
 
         return border;
     }
+    public static Point[] getTriangle(ArrayList<Point> points, StackManager sm) {
+        Point[] triangle = new Point[3];
+        Float minX = null, maxX = null, minY = null, maxY = null;
+
+        for (Point p : points) {
+            if (minX == null || p.x < minX) minX = p.x;
+            if (maxX == null || p.x > maxX) maxX = p.x;
+            if (minY == null || p.y < minY) minY = p.y;
+            if (maxY == null || p.y > maxY) maxY = p.y;
+        }
+
+        for (Object obj : sm.objStack) {
+            if (obj instanceof NemoRoom) {
+                int i = 0;
+                Point[] room = new Point[4];
+                for (Coord c : ((NemoRoom) obj).coords) {
+                    room[i] = new Point(c.getX(), c.getY());
+                    i++;
+                }
+                // 방 안에 문이 있다면
+                if (minX >= room[0].x && maxX <= room[3].x && minY >= room[0].y && maxY <= room[1].y) {
+                    //위쪽 내벽에 문
+                    if (minY - room[0].y <= 10) {
+                        if (minX - room[0].x < room[3].x - maxX) {
+                            triangle[0] = new Point(minX, room[0].y);
+                            triangle[1] = new Point(minX, maxY);
+                            triangle[2] = new Point(maxX, room[0].y);
+                        } else {
+                            triangle[0] = new Point(maxX, room[0].y);
+                            triangle[1] = new Point(maxX, maxY);
+                            triangle[2] = new Point(minX, room[0].y);
+                        }
+                    } else if (minX - room[0].x <= 10) {
+                        //왼쪽 내벽에 문
+                        if (minY - room[0].y < room[1].y - maxY) {
+                            triangle[0] = new Point(room[0].x, minY);
+                            triangle[1] = new Point(maxX, minY);
+                            triangle[2] = new Point(room[0].x, maxY);
+                        } else {
+                            triangle[0] = new Point(room[0].x, maxY);
+                            triangle[1] = new Point(maxX, maxY);
+                            triangle[2] = new Point(room[0].x, minY);
+                        }
+                    } else if (room[1].y - maxY <= 10) {
+                        //아래쪽 내벽에 문
+                        if (minX - room[1].x < room[2].x - maxX) {
+                            triangle[0] = new Point(minX, room[1].y);
+                            triangle[1] = new Point(minX, minY);
+                            triangle[2] = new Point(maxX, room[1].y);
+                        } else {
+                            triangle[0] = new Point(maxX, room[1].y);
+                            triangle[1] = new Point(maxX, minY);
+                            triangle[2] = new Point(minX, room[1].y);
+                        }
+                    } else if (room[3].x - maxX <= 10) {
+                        //오른쪽 내벽에 문
+                        if (minY - room[3].y < room[2].y - maxY) {
+                            triangle[0] = new Point(room[3].x, minY);
+                            triangle[1] = new Point(minX, minY);
+                            triangle[2] = new Point(room[3].x, maxY);
+                        } else {
+                            triangle[0] = new Point(room[3].x, maxY);
+                            triangle[1] = new Point(minX, maxY);
+                            triangle[2] = new Point(room[3].x, minY);
+                        }
+                    }
+
+                    //위쪽 외벽에 문
+                } else if (minX > room[0].x && maxX < room[3].x && minY < room[0].y && maxY <= room[1].y) {
+                    if (room[0].y - maxY <= 10) {
+                        if (minX - room[0].x < room[3].x - maxX) {
+                            triangle[0] = new Point(minX, room[0].y);
+                            triangle[1] = new Point(minX, minY);
+                            triangle[2] = new Point(maxX, room[0].y);
+                        } else {
+                            triangle[0] = new Point(maxX, room[0].y);
+                            triangle[1] = new Point(maxX, minY);
+                            triangle[2] = new Point(minX, room[0].y);
+                        }
+                    }
+                } else if (minX < room[0].x && maxX <= room[0].x && minY > room[0].y && maxY < room[1].y) {
+                    if (room[0].x - maxX <= 10) {
+                        //왼쪽 외벽에 문
+                        if (minY - room[0].y < room[1].y - maxY) {
+                            triangle[0] = new Point(room[0].x, minY);
+                            triangle[1] = new Point(minX, minY);
+                            triangle[2] = new Point(room[0].x, maxY);
+                        } else {
+                            triangle[0] = new Point(room[0].x, maxY);
+                            triangle[1] = new Point(minX, maxY);
+                            triangle[2] = new Point(room[0].x, minY);
+                        }
+                    }
+                } else if (minX > room[1].x && maxX < room[2].x && minY >= room[1].y && maxY > minY) {
+                    if (minY - room[1].y <= 10) {
+                        //아래쪽 외벽에 문
+                        if (minX - room[1].x < room[2].x - maxX) {
+                            triangle[0] = new Point(minX, room[1].y);
+                            triangle[1] = new Point(minX, maxY);
+                            triangle[2] = new Point(maxX, room[1].y);
+                        } else {
+                            triangle[0] = new Point(maxX, room[1].y);
+                            triangle[1] = new Point(maxX, maxY);
+                            triangle[2] = new Point(minX, room[1].y);
+                        }
+
+                    }
+                } else if (minX >= room[3].x && maxX > minX && minY > room[3].y && maxY < room[2].y) {
+                    if (minX - room[3].x <= 10) {
+                        //오른쪽 외벽에 문
+                        if (minY - room[3].y < room[2].y - maxY) {
+                            triangle[0] = new Point(room[3].x, minY);
+                            triangle[1] = new Point(maxX, minY);
+                            triangle[2] = new Point(room[3].x, maxY);
+                        } else {
+                            triangle[0] = new Point(room[3].x, maxY);
+                            triangle[1] = new Point(maxX, maxY);
+                            triangle[2] = new Point(room[3].x, minY);
+                        }
+
+                    }
+                }
+            }
+        }
+        return triangle;
+    }
 
     public static int getShortestRoomCord(StackManager stackManager, Point[] border, Coord cord) {
         // 이건 가장 가까운 점을 찾아주고
@@ -49,7 +175,7 @@ public class MacGyver {
                                 Log.e("getShortestRoomCord", "Left");
                                 dx = 0;
                                 if (dis < threshold) dy = 0;
-                                else dy = (int) (border[i].y - c.getY());;
+                                else dy = (int) (border[i].y - c.getY());
                                 cord.setCoord(c, dx, dy);
                             } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "RIGHT");
@@ -111,7 +237,6 @@ public class MacGyver {
         }
         return idx;
     }
-
 
     public static float getDistance(Coord coord, Point point) {
         return (float) Math.sqrt(Math.pow(coord.getX() - point.x, 2) + Math.pow(coord.getY() - point.y, 2));
