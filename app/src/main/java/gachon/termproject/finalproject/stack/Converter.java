@@ -28,7 +28,7 @@ public class Converter {
         } else {
             // 변환 한번 해주자
             obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
-            obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
+            //obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
 
             if (isWindow(points)) {
 

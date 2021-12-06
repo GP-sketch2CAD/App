@@ -33,14 +33,14 @@ public class MacGyver {
         // 보더 좀 정리해줌
 
         int idx = 0, i, dx, dy, threshold = 50;
-        float minDistance = threshold, dis;
+        float minDistance = -1, dis;
 
         for (Object obj : stackManager.objStack) {
             if (obj instanceof NemoRoom) {
                 for (Coord c : ((NemoRoom) obj).coords) {
                     for (i = 0; i < 4; i++) {
                         dis = getDistance(c, border[i]);
-                        if (minDistance > dis) {
+                        if (minDistance < 0 || minDistance > dis) {
                             idx = i;
                             minDistance = dis;
 
@@ -49,32 +49,39 @@ public class MacGyver {
                                 Log.e("getShortestRoomCord", "Left");
                                 dx = 0;
                                 if (dis < threshold) dy = 0;
-                                else dy = (int) border[i].y;
+                                else dy = (int) (border[i].y - c.getY());;
                                 cord.setCoord(c, dx, dy);
                             } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "RIGHT");
                                 dx = 0;
                                 if (dis < threshold) dy = 0;
-                                else dy = (int) border[i].y;
+                                else dy = (int) (border[i].y - c.getY());
                                 cord.setCoord(c, dx, dy);
                             } else if (isBorderUnderRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "DOWN");
                                 dy = 0;
                                 if (dis < threshold) dx = 0;
-                                else dx = (int) border[i].x;
+                                else dx = (int) (border[i].x - c.getX());
                                 cord.setCoord(c, dx, dy);
                             } else if (isBorderOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "UP");
                                 dy = 0;
                                 if (dis < threshold) dx = 0;
-                                else dx = (int) border[i].x;
+                                else dx = (int) (border[i].x - c.getX());
+                                cord.setCoord(c, dx, dy);
+                            } else if (isBorderInRoom((NemoRoom) obj, border, threshold)) {
+                                Log.e("getShortestRoomCord", "IN");
+                                if (Math.abs(c.getX() - border[i].x) < threshold / 2) dx = 0;
+                                else dx = (int) (border[i].x - c.getX());
+                                if (Math.abs(c.getY() - border[i].y) < threshold / 2) dy = 0;
+                                else dy = (int) (border[i].y - c.getY());
                                 cord.setCoord(c, dx, dy);
                             } else {
                                 Log.e("Error", "some error in find left right up down");
                             }
                         }
 
-                        if (dis < threshold) {
+                        if (dis < threshold / 2) {
                             border[i].x = c.getX();
                             border[i].y = c.getY();
 
@@ -157,6 +164,16 @@ public class MacGyver {
         }
         return true;
     }
+
+    public static boolean isBorderInRoom(NemoRoom room, Point[] border, int threshold) {
+        threshold /= 2;
+        if (room.coords[0].getX() > border[0].x + threshold) return false;
+        if (room.coords[0].getY() > border[0].y + threshold) return false;
+        if (room.coords[2].getX() < border[0].x - threshold) return false;
+        if (room.coords[2].getY() < border[0].y - threshold) return false;
+        return true;
+    }
+
 
     public static boolean isCross(float[] p, float[] q) {
 
