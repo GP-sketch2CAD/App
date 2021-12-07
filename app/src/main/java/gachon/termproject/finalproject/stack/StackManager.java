@@ -256,7 +256,12 @@ public class StackManager {
                 }
                 drawStack.pollFirst();
             } else {
-                objStack.push(converter.convertPoints2Obj(de.points, this));
+                Object temp = converter.convertPoints2Obj(de.points, this);
+                if(temp == null) {
+                    drawStack.pollFirst();
+                    continue;
+                }
+                objStack.push(temp);
                 drawStack.pollFirst();
             }
         }

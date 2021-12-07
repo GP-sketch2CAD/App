@@ -12,6 +12,7 @@ import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
 
+
 public class Converter {
     double epsilon = 50.;
 
@@ -46,7 +47,10 @@ public class Converter {
                 LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
                 obj = new NemoColumn(border, linkC, LCidx);
 
-            } else if (isWall(points)) {
+            }else if(isOverlap(points, stackManager)){
+                obj = null;
+
+            }else if (isWall(points)) {
                 // 만나는 벽이 있는지 확인
                 int LCidx = 0;
                 Point[] border = MacGyver.getBorder(points);
@@ -137,6 +141,51 @@ public class Converter {
 
         return false;
     }
+
+    private boolean isOverlap(ArrayList<Point> points, StackManager stackManager){
+        //border에 x와 y좌표가 기준사각형의 x와 y보다 작으면 안에있는 사각형, border의 x와 y가 기준 사각형의 x와 y보다 크면 보다 큰 사각형
+        Point[] border = MacGyver.getBorder(points);
+        int LT = 0, LB = 1, RB = 2, RT = 3;
+
+        int ccount = 0;
+
+        Point[] room = new Point[4];
+
+        if(stackManager.objStack.size() == 0) return false;
+
+        for(Object obj : stackManager.objStack){
+            if(obj instanceof NemoRoom){
+                int count = 0;
+                int i = 0;
+                //Point[] room = new Point[4];
+                for(Coord c : ((NemoRoom) obj).coords){
+                    room[i] = new Point(c.getX(), c.getY());
+                    i++;
+                }
+
+                for(int a = 0; a < 4; a++){
+                    if((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
+                            (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
+                        count++;
+                    }
+                }
+                if(count == 1) {
+                    Log.e("Overlap!", "Nope");
+                    return true;
+                }
+                else{
+                    ccount++;
+                    continue;
+                }
+            }
+
+        }
+        if(ccount == stackManager.objStack.size()) {
+            return false;
+        }
+        Log.e("Overlap!", "Nope");
+            return true;
+        }
 
 }
 
