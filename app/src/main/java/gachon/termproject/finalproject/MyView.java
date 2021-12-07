@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import gachon.termproject.finalproject.stack.Digit;
 import gachon.termproject.finalproject.stack.MacGyver;
 import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
@@ -67,11 +68,20 @@ public class MyView extends View {
 
         //창문 그리기
         lines = stackManager.getWindowPoint();
-        Paint c = new Paint();
-        c.setStrokeWidth(5);
-        c.setColor(Color.YELLOW);
+        Paint c1 = new Paint();
+        c1.setStrokeWidth(5);
+        c1.setColor(Color.YELLOW);
         for(int[] rec: lines){
-            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c1);
+        }
+
+        // 숫자 쓰기
+        ArrayList<Digit> todigitDraw = stackManager.getdigitPoint();
+        Paint t= new Paint();
+        t.setTextSize(50);
+        for(int i = 0; i < todigitDraw.size(); i++) {
+            if (todigitDraw.get(i).check)
+                canvas.drawText(Integer.toString(todigitDraw.get(i).result), (int) todigitDraw.get(i).points[0].x, (int) todigitDraw.get(i).points[0].y, t);
         }
 
 
@@ -118,13 +128,14 @@ public class MyView extends View {
         return true;
     }
 
-    public void classifyDrawing(Point[] around) throws Throwable {
+    public int classifyDrawing(Point[] around) throws Throwable {
         Bitmap abc= Bitmap.createBitmap(bitmap,(int)around[0].x-10,(int)around[0].y-10,(int)(around[2].x-around[0].x+20), (int)(around[1].y-around[0].y+20));
 
         if (abc != null && this.digitClassifier.isInitialized()) {
-            String a= this.digitClassifier.classify(abc);
-            Log.e("resultText", a);
+            int a= this.digitClassifier.classify(abc);
+            return a;
         }
+        else return -1;
     }
 
 }

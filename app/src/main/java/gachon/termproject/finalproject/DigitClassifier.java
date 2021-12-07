@@ -87,7 +87,7 @@ public final class DigitClassifier {
         return (ByteBuffer)var10;
     }
 
-    public final String classify(Bitmap bitmap) throws Throwable {
+    public final int classify(Bitmap bitmap) throws Throwable {
         boolean var2 = this.isInitialized;
         if (!var2) {
             String var23 = "TF Lite Interpreter is not initialized yet.";
@@ -144,27 +144,33 @@ public final class DigitClassifier {
             String var35 = String.format(var29, Arrays.copyOf(var30, var30.length));
             String resultString = var35;
             System.out.println(var35);
-            return resultString;
+            if(result[maxIndex]>=0.95)
+            {
+                return maxIndex;
+            }
+            else {
+                return -1;
+            }
         }
     }
 
-    public final Task classifyAsync( Bitmap bitmap) {
-        final TaskCompletionSource task = new TaskCompletionSource();
-        this.executorService.execute((Runnable)(new Runnable() {
-            public final void run() {
-                String result = null;
-                try {
-                    System.out.println(bitmap+"11");
-                    result = DigitClassifier.this.classify(bitmap);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-                task.setResult(result);
-            }
-        }));
-        Task var10000 = task.getTask();
-        return var10000;
-    }
+//    public final Task classifyAsync( Bitmap bitmap) {
+//        final TaskCompletionSource task = new TaskCompletionSource();
+//        this.executorService.execute((Runnable)(new Runnable() {
+//            public final void run() {
+//                int result ;
+//                try {
+//                    System.out.println(bitmap+"11");
+//                    result = DigitClassifier.this.classify(bitmap);
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                }
+//                task.setResult(result);
+//            }
+//        }));
+//        Task var10000 = task.getTask();
+//        return var10000;
+//    }
 
     public final void close() {
         this.executorService.execute((Runnable)(new Runnable() {

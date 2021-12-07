@@ -125,6 +125,18 @@ public class StackManager {
         return allPoints;
     }
 
+    public ArrayList<Digit> getdigitPoint() {
+        ArrayList<Digit> result = new ArrayList<>();
+
+        for (Object obj : objStack) {
+            if (obj instanceof Digit) {
+
+                result.add((Digit)obj);
+            }
+        }
+        return result;
+    }
+
     public ArrayList<int[]> getWallPoint() {
         ArrayList<int[]> result = new ArrayList<>();
 
@@ -198,16 +210,38 @@ public class StackManager {
                 callConvertDraw2Obj(1000);
                 return;
             }
-            for(int i=0;i<bt.size();i++) {
-                System.out.println(bt.get(i)[0].x);
-                try {
-                    myView.classifyDrawing(bt.get(i));
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+            Point[] size = MacGyver.getBorder(de.points);
+            float recsize = (size[2].x - size[0].x) * (size[1].y - size[0].y);
+            System.out.println(recsize);
+            if (recsize < 10000) {
+                ArrayList<Integer> result = new ArrayList<>();
+                int total = 0;
+                for (int i = 0; i < bt.size(); i++) {
+                    System.out.println(bt.get(i)[0].x);
+                    try {
+                        int num;
+                        num = myView.classifyDrawing(bt.get(i));
+                        if (num != -1) {
+                            result.add(num);
+                            total = (int) (total + result.get(i) * Math.pow(10, bt.size() - 1 - i));
+                        } else {
+                            objStack.push(converter.convertPoints2Obj(de.points, this));
+                            break;
+                        }
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
                 }
+                if (total > 0) {
+                    Digit digit = new Digit(MacGyver.getBorder(de.points), total);
+                    objStack.push(digit);
+                    System.out.println(total);
+                }
+                drawStack.pollFirst();
+            } else {
+                objStack.push(converter.convertPoints2Obj(de.points, this));
+                drawStack.pollFirst();
             }
-            objStack.push(converter.convertPoints2Obj(de.points, this));
-            drawStack.pollFirst();
         }
         myView.invalidate();
     }
