@@ -41,9 +41,11 @@ public class Converter {
                 Log.e("arctOBJ", "column");
                 int LCidx = 0;
                 Point[] border = MacGyver.getBorder(points);
-                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
+                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
+                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
+                Coord linkC = new Coord(StackManager.initialCord, g, s);
 
-                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                LCidx = MacGyver.getShortestColumnCord(stackManager, border, linkC);
                 obj = new NemoColumn(border, linkC, LCidx);
 
             } else if (isOverlap(points, stackManager)) {
@@ -128,7 +130,7 @@ public class Converter {
             }
         }
 
-        if (check > 3) return true;
+        if (check > 2) return true;
         return false;
     }
 

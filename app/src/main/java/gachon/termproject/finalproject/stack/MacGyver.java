@@ -235,6 +235,74 @@ public class MacGyver {
         return idx;
     }
 
+    public static int getShortestColumnCord(StackManager stackManager, Point[] border, Coord cord) {
+        // 이건 가장 가까운 점을 찾아주고
+        // 보더 좀 정리해줌
+
+        int idx = 0, i, dx, dy, threshold = 100;
+        float minDistance = -1, dis;
+
+        for (Object obj : stackManager.objStack) {
+            if (obj instanceof NemoRoom) {
+                for (int c = 0; c < 4; c++) {
+                    for (i = 0; i < 4; i++) {
+                        dis = getDistance(((NemoRoom) obj).coords[c], border[i]);
+                        if (minDistance < 0 || minDistance > dis) {
+                            idx = i;
+                            minDistance = dis;
+
+                            if (dis < threshold) {
+                                if (isBorderLeftOnRoom((NemoRoom) obj, border, threshold) ||
+                                        isBorderRightOnRoom((NemoRoom) obj, border, threshold) ||
+                                        isBorderUnderRoom((NemoRoom) obj, border, threshold) ||
+                                        isBorderOnRoom((NemoRoom) obj, border, threshold)) {
+                                    cord.setCoordByPoint(((NemoRoom) obj).coords[c], 0, 0);
+                                } else if (isBorderInRoom((NemoRoom) obj, border, threshold)) {
+                                    Log.e("getShortestRoomCord", "IN");
+                                    if (Math.abs(((NemoRoom) obj).innerCords[c].getPointX() - border[i].x) < threshold)
+                                        dx = 0;
+                                    else
+                                        dx = (int) (border[i].x - ((NemoRoom) obj).innerCords[c].getPointX());
+                                    if (Math.abs(((NemoRoom) obj).innerCords[c].getPointY() - border[i].y) < threshold)
+                                        dy = 0;
+                                    else
+                                        dy = (int) (border[i].y - ((NemoRoom) obj).innerCords[c].getPointY());
+                                    cord.setCoordByPoint(((NemoRoom) obj).innerCords[c], dx, dy);
+                                }
+                            }
+                        }
+//
+                        if (dis < threshold / 2) {
+                            border[i].x = ((NemoRoom) obj).coords[c].getPointX();
+                            border[i].y = ((NemoRoom) obj).coords[c].getPointY();
+
+                            switch (i) {
+                                case 0:
+                                    border[1].x = border[i].x;
+                                    border[3].y = border[i].y;
+                                    break;
+                                case 1:
+                                    border[0].x = border[i].x;
+                                    border[2].y = border[i].y;
+                                    break;
+                                case 2:
+                                    border[3].x = border[i].x;
+                                    border[1].y = border[i].y;
+                                    break;
+                                case 3:
+                                    border[2].x = border[i].x;
+                                    border[0].y = border[i].y;
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return idx;
+    }
+
+
     public static float getDistance(Coord coord, Point point) {
         return (float) Math.sqrt(Math.pow(coord.getPointX() - point.x, 2) + Math.pow(coord.getPointY() - point.y, 2));
     }

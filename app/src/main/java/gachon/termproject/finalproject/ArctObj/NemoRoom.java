@@ -6,7 +6,7 @@ import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
 
 public class NemoRoom {
-    public static final int LT = 0, LB = 1, RB = 2, RT = 3;
+    public final int LT = 0, LB = 1, RB = 2, RT = 3;
 
     public int LCidx; // LT LB RB RT 순
     public Coord[] coords = new Coord[4];

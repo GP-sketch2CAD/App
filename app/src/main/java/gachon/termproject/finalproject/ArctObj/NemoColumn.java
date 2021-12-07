@@ -1,72 +1,76 @@
 package gachon.termproject.finalproject.ArctObj;
 
 import gachon.termproject.finalproject.stack.Point;
+import gachon.termproject.finalproject.stack.StackManager;
 
 public class NemoColumn {
-    public static final int LT = 0, LB = 1, RB = 2, RT = 3;
+    public final int LT = 0, LB = 1, RB = 2, RT = 3;
 
     public int LCidx; // LT LB RB RT 순
     public Coord[] coords = new Coord[4];
-    public Integer dx = null;
-    public Integer dy = null;
 
-    private int garo = -1;
-    private int sero = -1;
-    private int pGaro;
-    private int pSero;
+    private int garo;
+    private int sero;
 
-    public NemoColumn(Point[] border, Coord linkedCoord, int LCidx){
+    public boolean isGaroSet = false;
+    public boolean isSeroSet = false;
+
+    public NemoColumn(Point[] border, Coord linkedCoord, int LCidx) {
         this.LCidx = LCidx;
 
         coords[LCidx] = linkedCoord;
-        pGaro = (int)(border[NemoRoom.RB].x - border[NemoRoom.LB].x);
-        pSero = (int)(border[NemoRoom.RB].y - border[NemoRoom.RT].y);
+        garo = (int) ((border[RB].x - border[LB].x) / StackManager.pointDivideMm);
+        sero = (int) ((border[RB].y - border[RT].y) / StackManager.pointDivideMm);
 
-        setCoords(pGaro, pSero);
+        setCoords();
     }
 
-    private void setCoords(int dx, int dy){
-        Coord linkedCoord = coords[LCidx];
+    private void setCoords() {
+        switch (LCidx) {
+            case LT:
+                coords[LB] = new Coord(coords[LT], 0, sero);
+                coords[RB] = new Coord(coords[LT], garo, sero);
+                coords[RT] = new Coord(coords[LT], garo, 0);
+                break;
+            case LB:
 
-        switch (LCidx){
-            case NemoRoom.LT:
-                coords[NemoRoom.LB] = new Coord(linkedCoord, 0 , dy);
-                coords[NemoRoom.RB] = new Coord(linkedCoord, dx , dy);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, dx , 0);
+                coords[LT] = new Coord(coords[LB], 0, -sero);
+                coords[RB] = new Coord(coords[LB], garo, 0);
+                coords[RT] = new Coord(coords[LB], garo, -sero);
                 break;
-            case NemoRoom.LB:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, 0 , -dy);
-
-                coords[NemoRoom.RB] = new Coord(linkedCoord, dx , 0);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, dx , -dy);
+            case RB:
+                coords[LT] = new Coord(coords[RB], -garo, -sero);
+                coords[LB] = new Coord(coords[RB], -garo, 0);
+                coords[RT] = new Coord(coords[RB], 0, -sero);
                 break;
-            case NemoRoom.RB:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, -dx , -dy);
-                coords[NemoRoom.LB] = new Coord(linkedCoord, -dx , 0);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, 0 , -dy);
-                break;
-            case NemoRoom.RT:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, -dx , 0);
-                coords[NemoRoom.LB] = new Coord(linkedCoord, -dx , dy);
-                coords[NemoRoom.RB] = new Coord(linkedCoord, 0 , dy);
+            case RT:
+                coords[LT] = new Coord(coords[RT], -garo, 0);
+                coords[LB] = new Coord(coords[RT], -garo, sero);
+                coords[RB] = new Coord(coords[RT], 0, sero);
                 break;
             default:
         }
 
     }
 
-    public void setGaro(int garo, float pointDivideMM){
+    public void setGaro(int garo) {
         this.garo = garo;
-        this.pGaro = (int)(pointDivideMM*garo);
-
-        setCoords(pGaro,pSero);
+        this.isGaroSet = true;
+        setCoords();
     }
 
-    public void setSero(int sero, float pointDivideMM){
+    public void setSero(int sero) {
         this.sero = sero;
-        this.pSero = (int)(pointDivideMM*sero);
+        this.isSeroSet = true;
+        setCoords();
+    }
 
-        setCoords(pGaro,pSero);
+    public int getGaro() {
+        return garo;
+    }
+
+    public int getSero() {
+        return sero;
     }
 
 
