@@ -69,11 +69,5 @@ public class NemoColumn {
         setCoords(pGaro,pSero);
     }
 
-    public void setDx(int dx){
-        coords[LCidx].dx = dx;
-    }
 
-    public void setDy(int dy){
-        coords[LCidx].dy = dy;
-    }
 }

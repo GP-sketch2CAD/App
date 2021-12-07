@@ -27,6 +27,7 @@ public class MacGyver {
 
         return border;
     }
+
     public static Point[] getTriangle(ArrayList<Point> points, StackManager sm) {
         Point[] triangle = new Point[3];
         Float minX = null, maxX = null, minY = null, maxY = null;
@@ -43,7 +44,7 @@ public class MacGyver {
                 int i = 0;
                 Point[] room = new Point[4];
                 for (Coord c : ((NemoRoom) obj).coords) {
-                    room[i] = new Point(c.getX(), c.getY());
+                    room[i] = new Point(c.getPointX(), c.getPointY());
                     i++;
                 }
                 // 방 안에 문이 있다면
@@ -171,45 +172,41 @@ public class MacGyver {
                             minDistance = dis;
 
                             // 링커포인트에 왼쪽 오른쪽 위 아래 어디로 연결되어있는 건지 확인을 해야해
-                            if (isBorderLeftOnRoom((NemoRoom) obj, border, threshold)) {
+                            if (isBorderLeftOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
                                 Log.e("getShortestRoomCord", "Left");
-                                dx = 0;
-                                if (dis < threshold) dy = 0;
-                                else dy = (int) (border[i].y - c.getY());
-                                cord.setCoord(c, dx, dy);
-                            } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold)) {
+                                dx = (int) (0 + ((NemoRoom) obj).thickness);
+                                dy = 0;
+                                cord.setCoordByPoint(c, dx, dy);
+                            } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
                                 Log.e("getShortestRoomCord", "RIGHT");
-                                dx = 0;
-                                if (dis < threshold) dy = 0;
-                                else dy = (int) (border[i].y - c.getY());
-                                cord.setCoord(c, dx, dy);
-                            } else if (isBorderUnderRoom((NemoRoom) obj, border, threshold)) {
+                                dx = (int) (0 - ((NemoRoom) obj).thickness);
+                                dy = 0;
+                                cord.setCoordByPoint(c, dx, dy);
+                            } else if (isBorderUnderRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
                                 Log.e("getShortestRoomCord", "DOWN");
-                                dy = 0;
-                                if (dis < threshold) dx = 0;
-                                else dx = (int) (border[i].x - c.getX());
-                                cord.setCoord(c, dx, dy);
-                            } else if (isBorderOnRoom((NemoRoom) obj, border, threshold)) {
+                                dx = 0;
+                                dy = (int) (0 - ((NemoRoom) obj).thickness);
+                                cord.setCoordByPoint(c, dx, dy);
+                            } else if (isBorderOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
                                 Log.e("getShortestRoomCord", "UP");
-                                dy = 0;
-                                if (dis < threshold) dx = 0;
-                                else dx = (int) (border[i].x - c.getX());
-                                cord.setCoord(c, dx, dy);
-                            } else if (isBorderInRoom((NemoRoom) obj, border, threshold)) {
+                                dx = 0;
+                                dy = (int) (0 + ((NemoRoom) obj).thickness);
+                                cord.setCoordByPoint(c, dx, dy);
+                            } else if (isBorderInRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
                                 Log.e("getShortestRoomCord", "IN");
-                                if (Math.abs(c.getX() - border[i].x) < threshold / 2) dx = 0;
-                                else dx = (int) (border[i].x - c.getX());
-                                if (Math.abs(c.getY() - border[i].y) < threshold / 2) dy = 0;
-                                else dy = (int) (border[i].y - c.getY());
-                                cord.setCoord(c, dx, dy);
+                                if (Math.abs(c.getPointX() - border[i].x) < threshold / 2) dx = 0;
+                                else dx = (int) (border[i].x - c.getPointX());
+                                if (Math.abs(c.getPointY() - border[i].y) < threshold / 2) dy = 0;
+                                else dy = (int) (border[i].y - c.getPointY());
+                                cord.setCoordByPoint(c, dx, dy);
                             } else {
                                 Log.e("Error", "some error in find left right up down");
                             }
                         }
 
                         if (dis < threshold / 2) {
-                            border[i].x = c.getX();
-                            border[i].y = c.getY();
+                            border[i].x = c.getPointX();
+                            border[i].y = c.getPointY();
 
                             switch (i) {
                                 case 0:
@@ -239,14 +236,14 @@ public class MacGyver {
     }
 
     public static float getDistance(Coord coord, Point point) {
-        return (float) Math.sqrt(Math.pow(coord.getX() - point.x, 2) + Math.pow(coord.getY() - point.y, 2));
+        return (float) Math.sqrt(Math.pow(coord.getPointX() - point.x, 2) + Math.pow(coord.getPointY() - point.y, 2));
     }
 
     public static boolean isBorderLeftOnRoom(NemoRoom room, Point[] border, int threshold) {
         int cx;
 
         for (Coord c : room.coords) {
-            cx = c.getX();
+            cx = c.getPointX();
             for (Point p : border) {
                 if (cx < (int) p.x - threshold) return false;
             }
@@ -258,7 +255,7 @@ public class MacGyver {
         int cx;
 
         for (Coord c : room.coords) {
-            cx = c.getX();
+            cx = c.getPointX();
             for (Point p : border) {
                 if (cx > (int) p.x + threshold) return false;
             }
@@ -270,7 +267,7 @@ public class MacGyver {
         int cy;
 
         for (Coord c : room.coords) {
-            cy = c.getY();
+            cy = c.getPointY();
             for (Point p : border) {
                 if (cy > (int) p.y + threshold) return false;
             }
@@ -282,7 +279,7 @@ public class MacGyver {
         int cy;
 
         for (Coord c : room.coords) {
-            cy = c.getY();
+            cy = c.getPointY();
             for (Point p : border) {
                 if (cy < (int) p.y - threshold) return false;
             }
@@ -292,10 +289,10 @@ public class MacGyver {
 
     public static boolean isBorderInRoom(NemoRoom room, Point[] border, int threshold) {
         threshold /= 2;
-        if (room.coords[0].getX() > border[0].x + threshold) return false;
-        if (room.coords[0].getY() > border[0].y + threshold) return false;
-        if (room.coords[2].getX() < border[0].x - threshold) return false;
-        if (room.coords[2].getY() < border[0].y - threshold) return false;
+        if (room.coords[0].getPointX() > border[0].x + threshold) return false;
+        if (room.coords[0].getPointY() > border[0].y + threshold) return false;
+        if (room.coords[2].getPointX() < border[0].x - threshold) return false;
+        if (room.coords[2].getPointY() < border[0].y - threshold) return false;
         return true;
     }
 

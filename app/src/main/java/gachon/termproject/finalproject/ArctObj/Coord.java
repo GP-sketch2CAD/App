@@ -1,13 +1,15 @@
 package gachon.termproject.finalproject.ArctObj;
 
+import gachon.termproject.finalproject.stack.StackManager;
+
 public class Coord {
     public boolean isLinking;
     private int x;
     private int y;
 
     private Coord linkingCoord;
-    public int dx;
-    public int dy;
+    private int dx;
+    private int dy;
 
     public Coord(int x, int y){
         this.isLinking = false;
@@ -22,11 +24,21 @@ public class Coord {
         this.dy = dy;
     }
 
-    public void setCoord(Coord linkingCoord, int dx, int dy){
+    public void setCoordByPoint(Coord linkingCoord, int dx, int dy){
         this.isLinking = true;
         this.linkingCoord = linkingCoord;
         this.dx = dx;
         this.dy = dy;
+    }
+
+    public int getPointX(){
+        if(isLinking == false) return x;
+        return (int) (getX() * StackManager.pointDivideMm);
+    }
+
+    public int getPointY(){
+        if(isLinking == false) return y;
+        return (int) (getY() * StackManager.pointDivideMm);
     }
 
     public int getX(){

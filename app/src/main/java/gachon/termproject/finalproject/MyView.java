@@ -8,17 +8,12 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import gachon.termproject.finalproject.stack.Digit;
-import gachon.termproject.finalproject.stack.MacGyver;
 import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
 
@@ -46,15 +41,18 @@ public class MyView extends View {
         Paint p1 = new Paint();
         p1.setStrokeWidth(10);
         p1.setColor(Color.WHITE);
-        Paint p = new Paint();
-        p.setStrokeWidth(10);
+
+        Paint blackPaint = new Paint();
+        blackPaint.setStrokeWidth(10);
+        blackPaint.setColor(Color.BLACK);
         Log.w("2", "2");
 
 
         // 벽 그리기
-        ArrayList<int[]> lines = stackManager.getWallPoint();
-        for(int[] line: lines){
-            canvas.drawLine(line[0], line[1], line[2], line[3], p);
+        ArrayList<int[]> lines;
+        ArrayList<float[]> rectangles = stackManager.getWallPoint();
+        for(float[] rec: rectangles){
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], blackPaint);
         }
 
         // 기둥 그리기
@@ -86,7 +84,7 @@ public class MyView extends View {
         }
 
         // 숫자 쓰기
-        ArrayList<Digit> todigitDraw = stackManager.getdigitPoint();
+        ArrayList<Digit> todigitDraw = stackManager.getDigitPoint();
         Paint t= new Paint();
         t.setTextSize(50);
         for(int i = 0; i < todigitDraw.size(); i++) {
@@ -105,7 +103,7 @@ public class MyView extends View {
             if (!toDraw.get(i).check)
                 continue;
             c.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
-            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
+            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, blackPaint);
 
         }
 
@@ -114,7 +112,7 @@ public class MyView extends View {
             if (!points.get(i).check)
                 continue;
             c.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p1);
-            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
+            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, blackPaint);
         }
     }
 
