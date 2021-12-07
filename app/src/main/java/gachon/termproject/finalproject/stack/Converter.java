@@ -145,48 +145,56 @@ public class Converter {
         return false;
     }
 
-    private boolean isOverlap(ArrayList<Point> points, StackManager stackManager) {
+    private boolean isOverlap(ArrayList<Point> points, StackManager stackManager){
         //border에 x와 y좌표가 기준사각형의 x와 y보다 작으면 안에있는 사각형, border의 x와 y가 기준 사각형의 x와 y보다 크면 보다 큰 사각형
         Point[] border = MacGyver.getBorder(points);
-        int LT = 0, LB = 1, RB = 2, RT = 3;
+        int LB = 0, LT = 1, RT = 2, RB = 3;
 
         int ccount = 0;
 
         Point[] room = new Point[4];
 
-        if (stackManager.objStack.size() == 0) return false;
+        if(stackManager.objStack.size() == 0) return false;
 
-        for (Object obj : stackManager.objStack) {
-            if (obj instanceof NemoRoom) {
+        for(Object obj : stackManager.objStack){
+            if(obj instanceof NemoRoom){
                 int count = 0;
                 int i = 0;
                 //Point[] room = new Point[4];
-                for (Coord c : ((NemoRoom) obj).coords) {
-                    room[i] = new Point(c.getPointX(), c.getPointY());
+                for(Coord c : ((NemoRoom) obj).coords){
+                    room[i] = new Point(c.getX(), c.getY());
                     i++;
                 }
 
-                for (int a = 0; a < 4; a++) {
-                    if ((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
+                for(int a = 0; a < 4; a++){
+                    if((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
                             (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
                         count++;
                     }
                 }
-                if (count == 1) {
+                if(count == 0) {
+                    if((border[LT].y < room[LT].y && border[LT].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x)) count = 1;
+                    if((border[RT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y)) count = 1;
+                    if((border[LB].y < room[LT].y && border[LB].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x)) count = 1;
+                    if((border[LT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y)) count = 1;
+                }
+
+                if(count == 1) {
                     Log.e("Overlap!", "Nope");
-                    return true;
-                } else {
+                    return false;
+                }
+                else{
                     ccount++;
                     continue;
                 }
             }
 
         }
-        if (ccount == stackManager.objStack.size()) {
+        if(ccount == stackManager.objStack.size()) {
             return false;
         }
-        Log.e("Overlap!", "Nope");
-        return true;
+        //Log.e("Overlap!!!!!!!!!", "Nope");
+        return false;
     }
 
 }
