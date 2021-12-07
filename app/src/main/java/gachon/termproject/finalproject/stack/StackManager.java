@@ -213,7 +213,7 @@ public class StackManager {
             Point[] size = MacGyver.getBorder(de.points);
             float recsize = (size[2].x - size[0].x) * (size[1].y - size[0].y);
             System.out.println(recsize);
-            if (recsize < 10000) {
+            if (recsize < 20000) {
                 ArrayList<Integer> result = new ArrayList<>();
                 int total = 0;
                 for (int i = 0; i < bt.size(); i++) {

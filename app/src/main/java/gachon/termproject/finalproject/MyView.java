@@ -81,7 +81,10 @@ public class MyView extends View {
         t.setTextSize(50);
         for(int i = 0; i < todigitDraw.size(); i++) {
             if (todigitDraw.get(i).check)
-                canvas.drawText(Integer.toString(todigitDraw.get(i).result), (int) todigitDraw.get(i).points[0].x, (int) todigitDraw.get(i).points[0].y, t);
+                canvas.drawText(Integer.toString(todigitDraw.get(i).result)
+                        , (int) ((todigitDraw.get(i).points[0].x+todigitDraw.get(i).points[2].x)/2)
+                        , (int) ((todigitDraw.get(i).points[0].y+todigitDraw.get(i).points[1].y)/2)
+                        , t);
         }
 
 
