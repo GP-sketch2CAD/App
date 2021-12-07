@@ -3,71 +3,96 @@ package gachon.termproject.finalproject.ArctObj;
 import java.util.ArrayList;
 
 import gachon.termproject.finalproject.stack.Point;
+import gachon.termproject.finalproject.stack.StackManager;
 
 public class NemoRoom {
-    public static final int LT = 0, LB = 1, RB = 2, RT = 3;
+    public final int LT = 0, LB = 1, RB = 2, RT = 3;
 
     public int LCidx; // LT LB RB RT 순
     public Coord[] coords = new Coord[4];
+    public Coord[] innerCords = new Coord[4];
 
-    private int garo = -1;
-    private int sero = -1;
-    public int thickness =  0; // TODO: 이거 그리는거 구현하고 고치기
-    private int pGaro;
-    private int pSero;
+    private int garo;
+    private int sero;
+    public int thickness = 200;
 
-    public NemoRoom(Point[] border, Coord linkedCoord, int LCidx){
+    public boolean isGaroSet = false;
+    public boolean isSeroSet = false;
+
+    public NemoRoom(Point[] border, Coord linkedCoord, int LCidx) {
         this.LCidx = LCidx;
 
         coords[LCidx] = linkedCoord;
-        pGaro = (int)(border[NemoRoom.RB].x - border[NemoRoom.LB].x);
-        pSero = (int)(border[NemoRoom.RB].y - border[NemoRoom.RT].y);
+        garo = (int) ((border[RB].x - border[LB].x) / StackManager.pointDivideMm) - 2*thickness;
+        sero = (int) ((border[RB].y - border[RT].y) / StackManager.pointDivideMm) - 2*thickness;
 
-        setCoords(pGaro, pSero);
+        setCoords();
     }
 
-    private void setCoords(int dx, int dy){
-        Coord linkedCoord = coords[LCidx];
+    private void setCoords() {
+        switch (LCidx) {
+            case LT:
+                innerCords[LT] = new Coord(coords[LCidx], thickness, thickness);
+                innerCords[LB] = new Coord(innerCords[LT], 0, sero);
+                innerCords[RB] = new Coord(innerCords[LT], garo, sero);
+                innerCords[RT] = new Coord(innerCords[LT], garo, 0);
 
-        switch (LCidx){
-            case NemoRoom.LT:
-                coords[NemoRoom.LB] = new Coord(linkedCoord, 0 , dy);
-                coords[NemoRoom.RB] = new Coord(linkedCoord, dx , dy);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, dx , 0);
+                coords[LB] = new Coord(innerCords[LT], 0 - thickness, sero + thickness);
+                coords[RB] = new Coord(innerCords[LT], garo + thickness, sero + thickness);
+                coords[RT] = new Coord(innerCords[LT], garo + thickness, 0 - thickness);
                 break;
-            case NemoRoom.LB:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, 0 , -dy);
+            case LB:
+                innerCords[LB] = new Coord(coords[LCidx], thickness, -thickness);
+                innerCords[LT] = new Coord(innerCords[LB], 0, -sero);
+                innerCords[RB] = new Coord(innerCords[LB], garo, 0);
+                innerCords[RT] = new Coord(innerCords[LB], garo, -sero);
 
-                coords[NemoRoom.RB] = new Coord(linkedCoord, dx , 0);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, dx , -dy);
+                coords[LT] = new Coord(innerCords[LB], 0 - thickness, -sero - thickness);
+                coords[RB] = new Coord(innerCords[LB], garo + thickness, 0 + thickness);
+                coords[RT] = new Coord(innerCords[LB], garo + thickness, -sero - thickness);
                 break;
-            case NemoRoom.RB:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, -dx , -dy);
-                coords[NemoRoom.LB] = new Coord(linkedCoord, -dx , 0);
-                coords[NemoRoom.RT] = new Coord(linkedCoord, 0 , -dy);
+            case RB:
+                innerCords[RB] = new Coord(coords[LCidx], -thickness, -thickness);
+                innerCords[LT] = new Coord(innerCords[RB], -garo, -sero);
+                innerCords[LB] = new Coord(innerCords[RB], -garo, 0);
+                innerCords[RT] = new Coord(innerCords[RB], 0, -sero);
+
+                coords[LT] = new Coord(innerCords[RB], -garo - thickness, -sero - thickness);
+                coords[LB] = new Coord(innerCords[RB], -garo - thickness, 0 + thickness);
+                coords[RT] = new Coord(innerCords[RB], 0 + thickness, -sero - thickness);
                 break;
-            case NemoRoom.RT:
-                coords[NemoRoom.LT] = new Coord(linkedCoord, -dx , 0);
-                coords[NemoRoom.LB] = new Coord(linkedCoord, -dx , dy);
-                coords[NemoRoom.RB] = new Coord(linkedCoord, 0 , dy);
+            case RT:
+                innerCords[RT] = new Coord(coords[LCidx], -thickness, thickness);
+                innerCords[LT] = new Coord(innerCords[RT], -garo, 0);
+                innerCords[LB] = new Coord(innerCords[RT], -garo, sero);
+                innerCords[RB] = new Coord(innerCords[RT], 0, sero);
+
+                coords[LT] = new Coord(innerCords[RT], -garo - thickness, 0 - thickness);
+                coords[LB] = new Coord(innerCords[RT], -garo - thickness, sero + thickness);
+                coords[RB] = new Coord(innerCords[RT], 0 + thickness, sero + thickness);
                 break;
             default:
         }
 
     }
 
-    public void setGaro(int garo, float pointDivideMM){
+    public void setGaro(int garo) {
         this.garo = garo;
-        this.pGaro = (int)(pointDivideMM*garo);
-
-        setCoords(pGaro,pSero);
+        this.isGaroSet = true;
+        setCoords();
     }
 
-    public void setSero(int sero, float pointDivideMM){
+    public void setSero(int sero) {
         this.sero = sero;
-        this.pSero = (int)(pointDivideMM*sero);
-
-        setCoords(pGaro,pSero);
+        this.isSeroSet = true;
+        setCoords();
     }
 
+    public int getGaro() {
+        return garo;
+    }
+
+    public int getSero() {
+        return sero;
+    }
 }
