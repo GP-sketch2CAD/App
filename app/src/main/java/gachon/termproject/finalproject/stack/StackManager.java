@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
+import gachon.termproject.finalproject.ArctObj.Door;
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
@@ -189,6 +190,22 @@ public class StackManager {
         return result;
     }
 
+    public ArrayList<int[]> getDoorPoint() {
+        ArrayList<int[]> result = new ArrayList<>();
+
+        for (Object obj : objStack) {
+            if (obj instanceof Door) {
+                int[] temp = new int[]{((Door) obj).coords[0].getX(),
+                        ((Door) obj).coords[0].getY(),
+                        ((Door) obj).coords[1].getX(),
+                        ((Door) obj).coords[1].getY(),
+                        ((Door) obj).coords[2].getX(),
+                        ((Door) obj).coords[2].getY()};
+                result.add(temp);
+            }
+        }
+        return result;
+    }
 
     private void callConvertDraw2Obj(long time) {
         // 1.5초 뒤 변환

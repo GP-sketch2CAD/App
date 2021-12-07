@@ -75,6 +75,16 @@ public class MyView extends View {
             canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c1);
         }
 
+        lines = stackManager.getDoorPoint();
+        Paint d = new Paint();
+        d.setStrokeWidth(5);
+        d.setColor(Color.GREEN);
+        for(int[] rec: lines){
+            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], d);
+            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], d);
+            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], d);
+        }
+
         // 숫자 쓰기
         ArrayList<Digit> todigitDraw = stackManager.getdigitPoint();
         Paint t= new Paint();

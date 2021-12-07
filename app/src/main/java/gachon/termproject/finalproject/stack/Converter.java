@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gachon.termproject.finalproject.ArctObj.Coord;
+import gachon.termproject.finalproject.ArctObj.Door;
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
@@ -30,17 +31,11 @@ public class Converter {
             if (isDoor(points, stackManager)){
                 Log.e("arctOBJ", "door");
                 Point[] door = MacGyver.getTriangle(points, stackManager);
-                System.out.println(door[0].x + " " + door[0].y);
-                System.out.println(door[1].x + " " + door[1].y);
-                System.out.println(door[2].x + " " + door[2].y);
+                obj = new Door(door);
             } else if (isWindow(points, stackManager)) {
                 Log.e("arctOBJ", "window");
-                int LCidx = 0;
                 Point[] border = MacGyver.getBorder(points);
-                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
-
-                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
-                obj = new NemoWindow(border, linkC, LCidx);
+                obj = new NemoWindow(border);
 
             }else if (isColumn(points)) {
                 Log.e("arctOBJ", "column");
