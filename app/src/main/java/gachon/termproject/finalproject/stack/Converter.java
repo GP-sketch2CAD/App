@@ -11,6 +11,7 @@ import gachon.termproject.finalproject.ArctObj.Door;
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
+import gachon.termproject.finalproject.R;
 
 
 public class Converter {
@@ -145,7 +146,7 @@ public class Converter {
     private boolean isOverlap(ArrayList<Point> points, StackManager stackManager){
         //border에 x와 y좌표가 기준사각형의 x와 y보다 작으면 안에있는 사각형, border의 x와 y가 기준 사각형의 x와 y보다 크면 보다 큰 사각형
         Point[] border = MacGyver.getBorder(points);
-        int LT = 0, LB = 1, RB = 2, RT = 3;
+        int LB = 0, LT = 1, RT = 2, RB = 3;
 
         int ccount = 0;
 
@@ -164,10 +165,15 @@ public class Converter {
                 }
 
                 for(int a = 0; a < 4; a++){
-                    if((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
-                            (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
+                    if((border[a].x > room[LT].x && border[a].x < room[RT].x) && (border[a].y < room[LT].y && border[a].y > room[LB].y)) {
                         count++;
                     }
+                }
+                if(count == 0) {
+                    if((border[LT].y < room[LT].y && border[LT].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x)) count = 1;
+                    if((border[RT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y)) count = 1;
+                    if((border[LB].y < room[LT].y && border[LB].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x)) count = 1;
+                    if((border[LT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y)) count = 1;
                 }
                 if(count == 1) {
                     Log.e("Overlap!", "Nope");
@@ -183,8 +189,8 @@ public class Converter {
         if(ccount == stackManager.objStack.size()) {
             return false;
         }
-        Log.e("Overlap!", "Nope");
-            return true;
+        //Log.e("Overlap!!!!!!!!!!!!!!", "Nope");
+            return false;
         }
 
 }

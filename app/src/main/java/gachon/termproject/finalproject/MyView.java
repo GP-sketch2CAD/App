@@ -122,7 +122,7 @@ public class MyView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        Log.e("p3", String.valueOf(points));
+        //Log.e("p3", String.valueOf(points));
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
