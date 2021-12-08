@@ -57,30 +57,30 @@ public class MyView extends View {
 
         // 기둥 그리기
         lines = stackManager.getColumnsPoint();
-        Paint b = new Paint();
-        b.setStrokeWidth(10);
-        b.setColor(Color.BLUE);
+        Paint bluePaint = new Paint();
+        bluePaint.setStrokeWidth(10);
+        bluePaint.setColor(Color.BLUE);
         for(int[] rec: lines){
-            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], b);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], bluePaint);
         }
 
         //창문 그리기
         lines = stackManager.getWindowPoint();
-        Paint c1 = new Paint();
-        c1.setStrokeWidth(5);
-        c1.setColor(Color.YELLOW);
+        Paint yellowPaint = new Paint();
+        yellowPaint.setStrokeWidth(5);
+        yellowPaint.setColor(Color.YELLOW);
         for(int[] rec: lines){
-            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c1);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], yellowPaint);
         }
 
         lines = stackManager.getDoorPoint();
-        Paint d = new Paint();
-        d.setStrokeWidth(5);
-        d.setColor(Color.GREEN);
+        Paint greenPaint = new Paint();
+        greenPaint.setStrokeWidth(5);
+        greenPaint.setColor(Color.GREEN);
         for(int[] rec: lines){
-            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], d);
-            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], d);
-            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], d);
+            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], greenPaint);
+            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], greenPaint);
+            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], greenPaint);
         }
 
         // 숫자 쓰기
