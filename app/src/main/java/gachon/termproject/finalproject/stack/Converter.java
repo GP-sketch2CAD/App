@@ -135,36 +135,24 @@ public class Converter {
     }
 
     private boolean isWindow(ArrayList<Point> points, StackManager sm) {
+        int LB = 0, LT = 1, RT = 2, RB = 3;
         Point[] border = MacGyver.getBorder(points);
         for (Object obj : sm.objStack) {
             if (obj instanceof NemoRoom) {
+                int count = 0;
                 int i = 0;
                 Point[] room = new Point[4];
                 for (Coord c : ((NemoRoom) obj).coords) {
                     room[i] = new Point(c.getPointX(), c.getPointY());
                     i++;
                 }
-                if ((room[0].x > border[0].x && room[0].x < border[2].x) || (room[0].y > border[0].y && room[0].y < border[2].y)
-                        || (room[2].x > border[0].x && room[2].x < border[2].x) || (room[1].y > border[0].y && room[1].y < border[2].y)) {
-                    // 여러 방 객체 중 어떤 방의 창문인지 확인
-                    if (border[1].y - border[0].y > border[2].x - border[1].x) {
-                        // 왼쪽 오른쪽 창문
-                        if (border[0].y > room[0].y && border[1].y < room[1].y) {
-                            // 왼쪽, 오른쪽 벽 안에 있으면
-                            if ((room[0].x > border[0].x && room[0].x < border[2].x) || (room[2].x > border[0].x && room[2].x < border[2].x)) {
-                                return true;
-                            }
-                        }
-                    } else {
-                        // 위 아래 창문
-                        if (border[0].x > room[0].x && border[2].x < room[3].x) {
-                            // 방의 가로 길이보다 작으면
-                            if ((room[0].y > border[0].y && room[0].y < border[2].y) || room[1].y > border[0].y && room[1].y < border[2].y) {
-                                return true;
-                            }
-                        }
+                for (int a = 0; a < 4; a++) {
+                    if ((border[a].x > room[LT].x && border[a].x < room[RT].x) && (border[a].y < room[LT].y && border[a].y > room[LB].y)) {
+                        count++;
                     }
                 }
+
+                if(count == 2) return true;
 
             }
         }
