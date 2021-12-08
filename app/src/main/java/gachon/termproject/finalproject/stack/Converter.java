@@ -201,13 +201,13 @@ public class Converter {
                         count = 1;
                     if ((border[LB].y < room[LT].y && border[LB].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
                         count = 1;
-                    if ((border[LT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
+                    if ((border[LT].x > room[LT].x && border[LT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
                         count = 1;
                 }
 
                 if (count == 1) {
                     Log.e("Overlap!", "Nope");
-                    return false;
+                    return true;
                 } else {
                     ccount++;
                     continue;
