@@ -55,7 +55,7 @@ public class StackManager {
                     {
 //                        System.out.println((int)p.x);
 //                        System.out.println((int)p2.x);
-                        if((((int) (p.x) == (int) (p2.x)) && ((int)(p.y) == (int) (p2.y))))
+                        if(((Math.abs((int) (p.x) - (int) (p2.x)))<5 && ((Math.abs((int)(p.y) - (int) (p2.y)))<5)))
                         {
                             isruq=true;
                         }
