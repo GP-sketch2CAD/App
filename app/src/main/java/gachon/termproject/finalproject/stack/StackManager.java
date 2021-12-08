@@ -179,8 +179,6 @@ public class StackManager {
             if (obj instanceof Door) {
                 int[] temp = new int[]{((Door) obj).coords[0].getPointX(),
                         ((Door) obj).coords[0].getPointY(),
-                        ((Door) obj).coords[1].getPointX(),
-                        ((Door) obj).coords[1].getPointY(),
                         ((Door) obj).coords[2].getPointX(),
                         ((Door) obj).coords[2].getPointY()};
                 result.add(temp);

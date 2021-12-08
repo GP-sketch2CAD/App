@@ -21,6 +21,7 @@ public class MyView extends View {
     ArrayList<Point> points = new ArrayList<Point>();
     StackManager stackManager;
     Bitmap bitmap = null;
+
     private DigitClassifier digitClassifier = new DigitClassifier(this);
     int color = Color.BLACK;
 
@@ -73,14 +74,13 @@ public class MyView extends View {
             canvas.drawRect(rec[0], rec[1], rec[2], rec[3], yellowPaint);
         }
 
+        // 문 그리기
         lines = stackManager.getDoorPoint();
         Paint greenPaint = new Paint();
         greenPaint.setStrokeWidth(5);
         greenPaint.setColor(Color.GREEN);
         for(int[] rec: lines){
-            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], greenPaint);
-            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], greenPaint);
-            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], greenPaint);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], greenPaint);
         }
 
         // 숫자 쓰기

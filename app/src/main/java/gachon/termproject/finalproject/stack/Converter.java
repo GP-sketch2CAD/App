@@ -30,8 +30,38 @@ public class Converter {
             // obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
             if (isDoor(points, stackManager)) {
                 Log.e("arctOBJ", "door");
-                Point[] door = MacGyver.getTriangle(points, stackManager);
-                obj = new Door(door);
+                Point[] triangle = MacGyver.getTriangle(points, stackManager);
+                float minX, minY, maxX, maxY;
+                int doorDisThreshold = 30;
+
+                for (Object room : stackManager.objStack) {
+                    if (room instanceof NemoRoom) {
+                        NemoRoom nr = (NemoRoom) room;
+
+                        minX = nr.coords[0].getPointX();
+                        minY = nr.coords[0].getPointY();
+                        maxX = nr.coords[2].getPointX();
+                        maxY = nr.coords[2].getPointY();
+
+                        if (Math.abs(minY - triangle[0].y) < doorDisThreshold) {
+                            // 위에 있는 경우
+                            obj = new Door(triangle, nr, 3);
+                            break;
+                        } else if (Math.abs(minX - triangle[0].x) < doorDisThreshold) {
+                            // 왼쪽에 있는 경우
+                            obj = new Door(triangle, nr, 0);
+                            break;
+                        } else if (Math.abs(maxY - triangle[0].y) < doorDisThreshold) {
+                            // 아래에 있는 경우
+                            obj = new Door(triangle, nr, 1);
+                            break;
+                        } else if (Math.abs(maxX - triangle[0].x) < doorDisThreshold) {
+                            // 오른쪽에 있는 경우
+                            obj = new Door(triangle, nr, 2);
+                            break;
+                        }
+                    }
+                }
             } else if (isWindow(points, stackManager)) {
                 Log.e("arctOBJ", "window");
                 Point[] border = MacGyver.getBorder(points);
@@ -49,14 +79,19 @@ public class Converter {
                         float[] right = new float[]{nr.coords[2].getPointX(), nr.coords[2].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
                         float[] top = new float[]{nr.coords[0].getPointX(), nr.coords[0].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
 
-                        if (MacGyver.isCross(xSun1, left) && MacGyver.isCross(xSun2, left))
+                        if (MacGyver.isCross(xSun1, left) && MacGyver.isCross(xSun2, left)) {
                             obj = new NemoWindow(border, nr, 0);
-                        else if (MacGyver.isCross(xSun1, right) && MacGyver.isCross(xSun2, right))
+                            break;
+                        } else if (MacGyver.isCross(xSun1, right) && MacGyver.isCross(xSun2, right)) {
                             obj = new NemoWindow(border, nr, 2);
-                        else if (MacGyver.isCross(ySun1, bot) && MacGyver.isCross(ySun2, bot))
+                            break;
+                        } else if (MacGyver.isCross(ySun1, bot) && MacGyver.isCross(ySun2, bot)) {
                             obj = new NemoWindow(border, nr, 1);
-                        else if (MacGyver.isCross(ySun1, top) && MacGyver.isCross(ySun2, top))
+                            break;
+                        } else if (MacGyver.isCross(ySun1, top) && MacGyver.isCross(ySun2, top)) {
                             obj = new NemoWindow(border, nr, 3);
+                            break;
+                        }
                     }
                 }
             } else if (isColumn(points)) {
@@ -189,9 +224,9 @@ public class Converter {
                 }
 
                 for (int a = 0; a < 4; a++) {
-                        if ((border[a].x > room[LT].x && border[a].x < room[RT].x) && (border[a].y < room[LT].y && border[a].y > room[LB].y)) {
-                            count++;
-                        }
+                    if ((border[a].x > room[LT].x && border[a].x < room[RT].x) && (border[a].y < room[LT].y && border[a].y > room[LB].y)) {
+                        count++;
+                    }
                 }
                 if (count == 0) {
                     if ((border[LT].y < room[LT].y && border[LT].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
