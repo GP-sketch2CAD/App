@@ -1,24 +1,24 @@
 package gachon.termproject.finalproject.stack;
 
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 
+import gachon.termproject.finalproject.ArctObj.Coord;
 import gachon.termproject.finalproject.ArctObj.Door;
 import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
-import gachon.termproject.finalproject.MainActivity;
 import gachon.termproject.finalproject.MyView;
 
 public class StackManager {
 
     private long timeThreshold = 750; // 일단 1초로 잡고 나중에 수정
+    public static double pointDivideMm = 0.1;
+    public static Coord initialCord = new Coord(0,0);
+
     Converter converter = new Converter();
     ArrayDeque<DrawElement> drawStack;
     ArrayDeque<Object> objStack;
@@ -41,7 +41,7 @@ public class StackManager {
         if (drawStack.size() == 0) {
             bt.clear();
             drawStack.push(newElement);
-            Point[] around = MacGyver.getBorder( newElement.points);
+            Point[] around = MacGyver.getBorder(newElement.points);
             bt.add(around);
         } else {
             DrawElement lastElement = drawStack.pop();
@@ -49,34 +49,29 @@ public class StackManager {
             if (newElement.startTime - lastElement.endTime < timeThreshold) {
                 isruq=false;
 
-                for(Point p : lastElement.points)
-                {
-                    for(Point p2 : newElement.points)
-                    {
+                for(Point p : lastElement.points) {
+                    for (Point p2 : newElement.points) {
 //                        System.out.println((int)p.x);
 //                        System.out.println((int)p2.x);
-                        if(((Math.abs((int) (p.x) - (int) (p2.x)))<5 && ((Math.abs((int)(p.y) - (int) (p2.y)))<5)))
-                        {
-                            isruq=true;
+                        if (((Math.abs((int) (p.x) - (int) (p2.x))) < 5 && ((Math.abs((int) (p.y) - (int) (p2.y))) < 5))) {
+                            isruq = true;
                         }
                     }
-                    System.out.println(isruq);
                 }
-                if(!(isruq))
-                {
+
+                if (!(isruq)) {
                     Log.e("resultText", "1111111111");
-                    Point[] around = MacGyver.getBorder( newElement.points);
+                    Point[] around = MacGyver.getBorder(newElement.points);
                     bt.add(around);
                     lastElement.addPoints(points);
                     lastElement.endTime = newElement.endTime;
                     drawStack.push(lastElement);
-                }
-                else {
-                    bt.remove(bt.size()-1);
+                } else {
+                    bt.remove(bt.size() - 1);
                     lastElement.addPoints(points);
                     lastElement.endTime = newElement.endTime;
                     drawStack.push(lastElement);
-                    Point[] around = MacGyver.getBorder( lastElement.points);
+                    Point[] around = MacGyver.getBorder(lastElement.points);
                     bt.add(around);
                 }
 //
@@ -101,21 +96,6 @@ public class StackManager {
         else return null;
     }
 
-    public ArrayList<Point> getAllPoints() {
-        ArrayList<Point> allPoints = new ArrayList<Point>();
-
-        // TODO: 나중에 수정하기
-        for (Object obj : objStack) {
-            allPoints.addAll((ArrayList<Point>) obj);
-        }
-
-        for (DrawElement de : drawStack) {
-            allPoints.addAll(de.points);
-        }
-
-        return allPoints;
-    }
-
     public ArrayList<Point> getDrawPoint() {
         ArrayList<Point> allPoints = new ArrayList<Point>();
 
@@ -126,34 +106,38 @@ public class StackManager {
         return allPoints;
     }
 
-    public ArrayList<Digit> getdigitPoint() {
+    public ArrayList<Digit> getDigitPoint() {
         ArrayList<Digit> result = new ArrayList<>();
 
         for (Object obj : objStack) {
             if (obj instanceof Digit) {
 
-                result.add((Digit)obj);
+                result.add((Digit) obj);
             }
         }
         return result;
     }
 
-    public ArrayList<int[]> getWallPoint() {
-        ArrayList<int[]> result = new ArrayList<>();
-
+    public ArrayList<float[]> getWallPoint() {
+        ArrayList<float[]> result = new ArrayList<>();
+        NemoRoom room;
         for (Object obj : objStack) {
             if (obj instanceof NemoRoom) {
-                for (int i = 0; i < 3; i++) {
-                    int[] temp = new int[]{((NemoRoom) obj).coords[i].getX(),
-                            ((NemoRoom) obj).coords[i].getY(),
-                            ((NemoRoom) obj).coords[i + 1].getX(),
-                            ((NemoRoom) obj).coords[i + 1].getY()};
-                    result.add(temp);
-                }
-                result.add(new int[]{((NemoRoom) obj).coords[3].getX(),
-                        ((NemoRoom) obj).coords[3].getY(),
-                        ((NemoRoom) obj).coords[0].getX(),
-                        ((NemoRoom) obj).coords[0].getY()});
+                room = (NemoRoom) obj;
+                float outMaxX, outMaxY, outMinX, outMinY, inMaxX, inMaxY, inMinX, inMinY;
+                outMinX = (float) (room.coords[0].getPointX());
+                outMinY = (float) (room.coords[0].getPointY());
+                outMaxX = (float) (room.coords[2].getPointX());
+                outMaxY = (float) (room.coords[2].getPointY());
+                inMinX = (float) (room.innerCords[0].getPointX());
+                inMinY = (float) (room.innerCords[0].getPointY());
+                inMaxX = (float) (room.innerCords[2].getPointX());
+                inMaxY = (float) (room.innerCords[2].getPointY());
+
+                result.add(new float[]{outMinX, outMinY, outMaxX, inMinY});
+                result.add(new float[]{outMinX, outMinY, inMinX, inMaxY});
+                result.add(new float[]{outMinX, inMaxY, outMaxX, outMaxY});
+                result.add(new float[]{inMaxX, outMinY, outMaxX, outMaxY});
             }
         }
 
@@ -165,10 +149,10 @@ public class StackManager {
 
         for (Object obj : objStack) {
             if (obj instanceof NemoColumn) {
-                int[] temp = new int[]{((NemoColumn) obj).coords[0].getX(),
-                        ((NemoColumn) obj).coords[0].getY(),
-                        ((NemoColumn) obj).coords[2].getX(),
-                        ((NemoColumn) obj).coords[2].getY()};
+                int[] temp = new int[]{((NemoColumn) obj).coords[0].getPointX(),
+                        ((NemoColumn) obj).coords[0].getPointY(),
+                        ((NemoColumn) obj).coords[2].getPointX(),
+                        ((NemoColumn) obj).coords[2].getPointY()};
                 result.add(temp);
             }
         }
@@ -180,10 +164,10 @@ public class StackManager {
 
         for (Object obj : objStack) {
             if (obj instanceof NemoWindow) {
-                int[] temp = new int[]{((NemoWindow) obj).coords[0].getX(),
-                        ((NemoWindow) obj).coords[0].getY(),
-                        ((NemoWindow) obj).coords[2].getX(),
-                        ((NemoWindow) obj).coords[2].getY()};
+                int[] temp = new int[]{((NemoWindow) obj).coords[0].getPointX(),
+                        ((NemoWindow) obj).coords[0].getPointY(),
+                        ((NemoWindow) obj).coords[2].getPointX(),
+                        ((NemoWindow) obj).coords[2].getPointY()};
                 result.add(temp);
             }
         }
@@ -195,12 +179,12 @@ public class StackManager {
 
         for (Object obj : objStack) {
             if (obj instanceof Door) {
-                int[] temp = new int[]{((Door) obj).coords[0].getX(),
-                        ((Door) obj).coords[0].getY(),
-                        ((Door) obj).coords[1].getX(),
-                        ((Door) obj).coords[1].getY(),
-                        ((Door) obj).coords[2].getX(),
-                        ((Door) obj).coords[2].getY()};
+                int[] temp = new int[]{((Door) obj).coords[0].getPointX(),
+                        ((Door) obj).coords[0].getPointY(),
+                        ((Door) obj).coords[1].getPointX(),
+                        ((Door) obj).coords[1].getPointY(),
+                        ((Door) obj).coords[2].getPointX(),
+                        ((Door) obj).coords[2].getPointY()};
                 result.add(temp);
             }
         }
@@ -228,9 +212,9 @@ public class StackManager {
                 return;
             }
             Point[] size = MacGyver.getBorder(de.points);
-            float recsize = (size[2].x - size[0].x) * (size[1].y - size[0].y);
-            System.out.println(recsize);
-            if (recsize < 20000) {
+            float recSize = (size[2].x - size[0].x) * (size[1].y - size[0].y);
+            System.out.println(recSize);
+            if (recSize < 20000) {
                 ArrayList<Integer> result = new ArrayList<>();
                 int total = 0;
                 for (int i = 0; i < bt.size(); i++) {
@@ -254,11 +238,15 @@ public class StackManager {
                     objStack.push(digit);
                     System.out.println(total);
                 }
-                drawStack.pollFirst();
             } else {
-                objStack.push(converter.convertPoints2Obj(de.points, this));
-                drawStack.pollFirst();
+                Object temp = converter.convertPoints2Obj(de.points, this);
+                if (temp == null) {
+                    drawStack.pollFirst();
+                    continue;
+                }
+                objStack.push(temp);
             }
+            drawStack.pollFirst();
         }
         myView.invalidate();
     }

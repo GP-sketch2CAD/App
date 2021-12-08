@@ -8,17 +8,12 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import gachon.termproject.finalproject.stack.Digit;
-import gachon.termproject.finalproject.stack.MacGyver;
 import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
 
@@ -46,47 +41,50 @@ public class MyView extends View {
         Paint p1 = new Paint();
         p1.setStrokeWidth(10);
         p1.setColor(Color.WHITE);
-        Paint p = new Paint();
-        p.setStrokeWidth(10);
+
+        Paint blackPaint = new Paint();
+        blackPaint.setStrokeWidth(10);
+        blackPaint.setColor(Color.BLACK);
         Log.w("2", "2");
 
 
         // 벽 그리기
-        ArrayList<int[]> lines = stackManager.getWallPoint();
-        for(int[] line: lines){
-            canvas.drawLine(line[0], line[1], line[2], line[3], p);
+        ArrayList<int[]> lines;
+        ArrayList<float[]> rectangles = stackManager.getWallPoint();
+        for(float[] rec: rectangles){
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], blackPaint);
         }
 
         // 기둥 그리기
         lines = stackManager.getColumnsPoint();
-        Paint b = new Paint();
-        b.setStrokeWidth(10);
-        b.setColor(Color.BLUE);
+        Paint bluePaint = new Paint();
+        bluePaint.setStrokeWidth(10);
+        bluePaint.setColor(Color.BLUE);
         for(int[] rec: lines){
-            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], b);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], bluePaint);
         }
 
         //창문 그리기
         lines = stackManager.getWindowPoint();
-        Paint c1 = new Paint();
-        c1.setStrokeWidth(5);
-        c1.setColor(Color.YELLOW);
+        Paint yellowPaint = new Paint();
+        yellowPaint.setStrokeWidth(5);
+        yellowPaint.setColor(Color.YELLOW);
         for(int[] rec: lines){
-            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], c1);
+            canvas.drawRect(rec[0], rec[1], rec[2], rec[3], yellowPaint);
         }
 
         lines = stackManager.getDoorPoint();
-        Paint d = new Paint();
-        d.setStrokeWidth(5);
-        d.setColor(Color.GREEN);
+        Paint greenPaint = new Paint();
+        greenPaint.setStrokeWidth(5);
+        greenPaint.setColor(Color.GREEN);
         for(int[] rec: lines){
-            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], d);
-            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], d);
-            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], d);
+            canvas.drawLine(rec[0], rec[1], rec[2], rec[3], greenPaint);
+            canvas.drawLine(rec[2], rec[3], rec[4], rec[5], greenPaint);
+            canvas.drawLine(rec[4], rec[5], rec[0], rec[1], greenPaint);
         }
 
         // 숫자 쓰기
-        ArrayList<Digit> todigitDraw = stackManager.getdigitPoint();
+        ArrayList<Digit> todigitDraw = stackManager.getDigitPoint();
         Paint t= new Paint();
         t.setTextSize(50);
         for(int i = 0; i < todigitDraw.size(); i++) {
@@ -105,7 +103,7 @@ public class MyView extends View {
             if (!toDraw.get(i).check)
                 continue;
             c.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p1);
-            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, p);
+            canvas.drawLine(toDraw.get(i - 1).x, toDraw.get(i - 1).y, toDraw.get(i).x, toDraw.get(i).y, blackPaint);
 
         }
 
@@ -114,7 +112,7 @@ public class MyView extends View {
             if (!points.get(i).check)
                 continue;
             c.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p1);
-            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, p);
+            canvas.drawLine(points.get(i - 1).x, points.get(i - 1).y, points.get(i).x, points.get(i).y, blackPaint);
         }
     }
 
@@ -122,7 +120,7 @@ public class MyView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        Log.e("p3", String.valueOf(points));
+        //Log.e("p3", String.valueOf(points));
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -152,4 +150,3 @@ public class MyView extends View {
     }
 
 }
-

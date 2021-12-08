@@ -12,6 +12,7 @@ import gachon.termproject.finalproject.ArctObj.NemoColumn;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
 import gachon.termproject.finalproject.ArctObj.NemoWindow;
 
+
 public class Converter {
     double epsilon = 50.;
 
@@ -23,34 +24,62 @@ public class Converter {
         Object obj = null;
 
         if (isNumber(points)) {
-        }
-        else {
+        } else {
             // 변환 한번 해주자
             obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
             // obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
-            if (isDoor(points, stackManager)){
+            if (isDoor(points, stackManager)) {
                 Log.e("arctOBJ", "door");
                 Point[] door = MacGyver.getTriangle(points, stackManager);
                 obj = new Door(door);
             } else if (isWindow(points, stackManager)) {
                 Log.e("arctOBJ", "window");
                 Point[] border = MacGyver.getBorder(points);
-                obj = new NemoWindow(border);
 
-            }else if (isColumn(points)) {
+                float[] xSun1 = new float[]{border[0].x, border[0].y, border[3].x, border[3].y};
+                float[] xSun2 = new float[]{border[1].x, border[1].y, border[2].x, border[2].y};
+                float[] ySun1 = new float[]{border[0].x, border[0].y, border[1].x, border[1].y};
+                float[] ySun2 = new float[]{border[2].x, border[2].y, border[3].x, border[3].y};
+
+                for (Object room : stackManager.objStack) {
+                    if (room instanceof NemoRoom) {
+                        NemoRoom nr = (NemoRoom) room;
+                        float[] left = new float[]{nr.coords[0].getPointX(), nr.coords[0].getPointY(), nr.coords[1].getPointX(), nr.coords[1].getPointY()};
+                        float[] bot = new float[]{nr.coords[1].getPointX(), nr.coords[1].getPointY(), nr.coords[2].getPointX(), nr.coords[2].getPointY()};
+                        float[] right = new float[]{nr.coords[2].getPointX(), nr.coords[2].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
+                        float[] top = new float[]{nr.coords[0].getPointX(), nr.coords[0].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
+
+                        if (MacGyver.isCross(xSun1, left) && MacGyver.isCross(xSun2, left))
+                            obj = new NemoWindow(border, nr, 0);
+                        else if (MacGyver.isCross(xSun1, right) && MacGyver.isCross(xSun2, right))
+                            obj = new NemoWindow(border, nr, 2);
+                        else if (MacGyver.isCross(ySun1, bot) && MacGyver.isCross(ySun2, bot))
+                            obj = new NemoWindow(border, nr, 1);
+                        else if (MacGyver.isCross(ySun1, top) && MacGyver.isCross(ySun2, top))
+                            obj = new NemoWindow(border, nr, 3);
+                    }
+                }
+            } else if (isColumn(points)) {
                 Log.e("arctOBJ", "column");
-                int LCidx = 0;
+                int LCidx;
                 Point[] border = MacGyver.getBorder(points);
-                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
+                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
+                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
+                Coord linkC = new Coord(StackManager.initialCord, g, s);
 
-                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                LCidx = MacGyver.getShortestColumnCord(stackManager, border, linkC);
                 obj = new NemoColumn(border, linkC, LCidx);
+
+            } else if (isOverlap(points, stackManager)) {
+                obj = null;
 
             } else if (isWall(points)) {
                 // 만나는 벽이 있는지 확인
-                int LCidx = 0;
+                int LCidx;
                 Point[] border = MacGyver.getBorder(points);
-                Coord linkC = new Coord((int) (border[0].x), (int) (border[0].y));
+                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
+                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
+                Coord linkC = new Coord(StackManager.initialCord, g, s);
 
                 LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
                 obj = new NemoRoom(border, linkC, LCidx);
@@ -63,7 +92,7 @@ public class Converter {
     private boolean isDoor(ArrayList<Point> points, StackManager sm) {
         if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() == 3 && !sm.objStack.isEmpty()) {
             Point[] door = MacGyver.getTriangle(points, sm);
-            if(door[0]!=null && door[1]!=null && door[2]!=null){
+            if (door[0] != null && door[1] != null && door[2] != null) {
                 return true;
             }
         }
@@ -77,25 +106,25 @@ public class Converter {
                 int i = 0;
                 Point[] room = new Point[4];
                 for (Coord c : ((NemoRoom) obj).coords) {
-                    room[i] = new Point(c.getX(), c.getY());
+                    room[i] = new Point(c.getPointX(), c.getPointY());
                     i++;
                 }
-                if((room[0].x > border[0].x && room[0].x < border[2].x) || (room[0].y > border[0].y && room[0].y < border[2].y)
-                        || (room[2].x > border[0].x && room[2].x < border[2].x) || (room[1].y > border[0].y && room[1].y < border[2].y)){
+                if ((room[0].x > border[0].x && room[0].x < border[2].x) || (room[0].y > border[0].y && room[0].y < border[2].y)
+                        || (room[2].x > border[0].x && room[2].x < border[2].x) || (room[1].y > border[0].y && room[1].y < border[2].y)) {
                     // 여러 방 객체 중 어떤 방의 창문인지 확인
-                    if(border[1].y - border[0].y > border[2].x - border[1].x){
+                    if (border[1].y - border[0].y > border[2].x - border[1].x) {
                         // 왼쪽 오른쪽 창문
-                        if(border[0].y > room[0].y && border[1].y < room[1].y){
+                        if (border[0].y > room[0].y && border[1].y < room[1].y) {
                             // 왼쪽, 오른쪽 벽 안에 있으면
-                            if((room[0].x > border[0].x && room[0].x < border[2].x) || (room[2].x > border[0].x && room[2].x < border[2].x)){
+                            if ((room[0].x > border[0].x && room[0].x < border[2].x) || (room[2].x > border[0].x && room[2].x < border[2].x)) {
                                 return true;
                             }
                         }
-                    }else{
+                    } else {
                         // 위 아래 창문
-                        if(border[0].x > room[0].x && border[2].x < room[3].x){
+                        if (border[0].x > room[0].x && border[2].x < room[3].x) {
                             // 방의 가로 길이보다 작으면
-                            if((room[0].y > border[0].y && room[0].y < border[2].y) || room[1].y > border[0].y && room[1].y < border[2].y){
+                            if ((room[0].y > border[0].y && room[0].y < border[2].y) || room[1].y > border[0].y && room[1].y < border[2].y) {
                                 return true;
                             }
                         }
@@ -109,7 +138,7 @@ public class Converter {
 
     private boolean isColumn(ArrayList<Point> points) {
         Point[] border = MacGyver.getBorder(points);
-        ArrayList<Point> sLine = (ArrayList<Point>) Line2Straight.douglasPeucker(points, epsilon/2);
+        ArrayList<Point> sLine = (ArrayList<Point>) Line2Straight.douglasPeucker(points, epsilon / 2);
         int check = 0;
 
         float[] LTRB = new float[]{border[0].x, border[0].y, border[2].x, border[2].y};
@@ -123,7 +152,7 @@ public class Converter {
             }
         }
 
-        if (check > 3) return true;
+        if (check > 2) return true;
         return false;
     }
 
@@ -135,6 +164,61 @@ public class Converter {
 
     private boolean isNumber(ArrayList<Point> points) {
 
+        return false;
+    }
+
+    private boolean isOverlap(ArrayList<Point> points, StackManager stackManager) {
+        //border에 x와 y좌표가 기준사각형의 x와 y보다 작으면 안에있는 사각형, border의 x와 y가 기준 사각형의 x와 y보다 크면 보다 큰 사각형
+        Point[] border = MacGyver.getBorder(points);
+        int LB = 0, LT = 1, RT = 2, RB = 3;
+
+        int ccount = 0;
+
+        Point[] room = new Point[4];
+
+        if (stackManager.objStack.size() == 0) return false;
+
+        for (Object obj : stackManager.objStack) {
+            if (obj instanceof NemoRoom) {
+                int count = 0;
+                int i = 0;
+                //Point[] room = new Point[4];
+                for (Coord c : ((NemoRoom) obj).coords) {
+                    room[i] = new Point(c.getX(), c.getY());
+                    i++;
+                }
+
+                for (int a = 0; a < 4; a++) {
+                    if ((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
+                            (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
+                        count++;
+                    }
+                }
+                if (count == 0) {
+                    if ((border[LT].y < room[LT].y && border[LT].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
+                        count = 1;
+                    if ((border[RT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
+                        count = 1;
+                    if ((border[LB].y < room[LT].y && border[LB].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
+                        count = 1;
+                    if ((border[LT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
+                        count = 1;
+                }
+
+                if (count == 1) {
+                    Log.e("Overlap!", "Nope");
+                    return false;
+                } else {
+                    ccount++;
+                    continue;
+                }
+            }
+
+        }
+        if (ccount == stackManager.objStack.size()) {
+            return false;
+        }
+        //Log.e("Overlap!!!!!!!!!", "Nope");
         return false;
     }
 
