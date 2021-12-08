@@ -3,6 +3,17 @@ import gachon.termproject.finalproject.stack.Point;
 
 public class Door {
     public Coord[] coords = new Coord[3];
+
+    public int doorType = 0;
+    public int degree;
+    public int garo;
+    public int sero;
+    public int doke;
+    public int frame;
+
+
+
+
     public Door (Point[] triangle){
         setCoords(triangle);
     }
