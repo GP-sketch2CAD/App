@@ -94,21 +94,6 @@ public class StackManager {
         else return null;
     }
 
-    public ArrayList<Point> getAllPoints() {
-        ArrayList<Point> allPoints = new ArrayList<Point>();
-
-        // TODO: 나중에 수정하기
-        for (Object obj : objStack) {
-            allPoints.addAll((ArrayList<Point>) obj);
-        }
-
-        for (DrawElement de : drawStack) {
-            allPoints.addAll(de.points);
-        }
-
-        return allPoints;
-    }
-
     public ArrayList<Point> getDrawPoint() {
         ArrayList<Point> allPoints = new ArrayList<Point>();
 

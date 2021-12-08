@@ -167,32 +167,32 @@ public class MacGyver {
                 for (Coord c : ((NemoRoom) obj).coords) {
                     for (i = 0; i < 4; i++) {
                         dis = getDistance(c, border[i]);
-                        if (minDistance < 0 || minDistance > dis) {
+                        if (dis < threshold && (minDistance < 0 || minDistance > dis)) {
                             idx = i;
                             minDistance = dis;
 
                             // 링커포인트에 왼쪽 오른쪽 위 아래 어디로 연결되어있는 건지 확인을 해야해
-                            if (isBorderLeftOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
+                            if (isBorderLeftOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "Left");
                                 dx = (int) (0 + ((NemoRoom) obj).thickness);
                                 dy = 0;
                                 cord.setCoordByPoint(c, dx, dy);
-                            } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
+                            } else if (isBorderRightOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "RIGHT");
                                 dx = (int) (0 - ((NemoRoom) obj).thickness);
                                 dy = 0;
                                 cord.setCoordByPoint(c, dx, dy);
-                            } else if (isBorderUnderRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
+                            } else if (isBorderUnderRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "DOWN");
                                 dx = 0;
                                 dy = (int) (0 - ((NemoRoom) obj).thickness);
                                 cord.setCoordByPoint(c, dx, dy);
-                            } else if (isBorderOnRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
+                            } else if (isBorderOnRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "UP");
                                 dx = 0;
                                 dy = (int) (0 + ((NemoRoom) obj).thickness);
                                 cord.setCoordByPoint(c, dx, dy);
-                            } else if (isBorderInRoom((NemoRoom) obj, border, threshold) && dis < threshold) {
+                            } else if (isBorderInRoom((NemoRoom) obj, border, threshold)) {
                                 Log.e("getShortestRoomCord", "IN");
                                 if (Math.abs(c.getPointX() - border[i].x) < threshold / 2) dx = 0;
                                 else dx = (int) (border[i].x - c.getPointX());
