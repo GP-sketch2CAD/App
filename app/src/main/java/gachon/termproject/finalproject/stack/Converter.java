@@ -184,15 +184,14 @@ public class Converter {
                 int i = 0;
                 //Point[] room = new Point[4];
                 for (Coord c : ((NemoRoom) obj).coords) {
-                    room[i] = new Point(c.getX(), c.getY());
+                    room[i] = new Point(c.getPointX(), c.getPointY());
                     i++;
                 }
 
                 for (int a = 0; a < 4; a++) {
-                    if ((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
-                            (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
-                        count++;
-                    }
+                        if ((border[a].x > room[LT].x && border[a].x < room[RT].x) && (border[a].y < room[LT].y && border[a].y > room[LB].y)) {
+                            count++;
+                        }
                 }
                 if (count == 0) {
                     if ((border[LT].y < room[LT].y && border[LT].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
@@ -201,13 +200,13 @@ public class Converter {
                         count = 1;
                     if ((border[LB].y < room[LT].y && border[LB].y > room[LB].y) && (border[LT].x < room[LT].x && border[RT].x > room[RT].x))
                         count = 1;
-                    if ((border[LT].x > room[LT].x && border[RT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
+                    if ((border[LT].x > room[LT].x && border[LT].x < room[RT].x) && (border[LT].y > room[LT].y && border[LB].y < room[LB].y))
                         count = 1;
                 }
 
                 if (count == 1) {
                     Log.e("Overlap!", "Nope");
-                    return false;
+                    return true;
                 } else {
                     ccount++;
                     continue;
