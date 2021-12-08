@@ -184,7 +184,7 @@ public class Converter {
                 int i = 0;
                 //Point[] room = new Point[4];
                 for (Coord c : ((NemoRoom) obj).coords) {
-                    room[i] = new Point(c.getX(), c.getY());
+                    room[i] = new Point(c.getPointX(), c.getPointY());
                     i++;
                 }
 
