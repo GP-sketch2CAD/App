@@ -153,6 +153,7 @@ public class Converter {
         int ccount = 0;
 
         Point[] room = new Point[4];
+        Point[] rroom = new Point[4];
 
         if(stackManager.objStack.size() == 0) return false;
 
@@ -162,11 +163,16 @@ public class Converter {
                 int i = 0;
                 //Point[] room = new Point[4];
                 for(Coord c : ((NemoRoom) obj).coords){
-                    room[i] = new Point(c.getX(), c.getY());
+                    room[i] = new Point(c.getPointX(), c.getPointY());
+                    rroom[i] = new Point(c.getX(), c.getY());
                     i++;
                 }
 
                 for(int a = 0; a < 4; a++){
+                    Log.e("room[" + a +"]", room[a].x + " , " + room[a].y);
+                    //Log.e("rroom[" + a +"]", rroom[a].x + " , " + rroom[a].y);
+                     Log.e("border[" + a + "]", border[a].x + " , " + border[a].y);
+
                     if((border[a].x > room[LT].x && border[a].x < room[RT].x) &&
                             (border[a].y > room[LT].y && border[a].y < room[LB].y)) {
                         count++;
@@ -181,7 +187,7 @@ public class Converter {
 
                 if(count == 1) {
                     Log.e("Overlap!", "Nope");
-                    return false;
+                    return true;
                 }
                 else{
                     ccount++;
