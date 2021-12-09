@@ -17,7 +17,7 @@ public class StackManager {
 
     private long timeThreshold = 750; // 일단 1초로 잡고 나중에 수정
     public static double pointDivideMm = 0.1;
-    public static Coord initialCord = new Coord(0,0);
+    public static Coord initialCord = new Coord(0, 0);
 
     Converter converter = new Converter();
     ArrayDeque<DrawElement> drawStack;
@@ -181,6 +181,13 @@ public class StackManager {
                         ((Door) obj).coords[0].getPointY(),
                         ((Door) obj).coords[2].getPointX(),
                         ((Door) obj).coords[2].getPointY()};
+                result.add(temp);
+
+
+                temp = new int[]{((Door) obj).doorCoords[0].getPointX(),
+                        ((Door) obj).doorCoords[0].getPointY(),
+                        ((Door) obj).doorCoords[2].getPointX(),
+                        ((Door) obj).doorCoords[2].getPointY()};
                 result.add(temp);
             }
         }
