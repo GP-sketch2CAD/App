@@ -11,12 +11,12 @@ public class NemoWindow {
     public Coord[] coords = new Coord[4];
 
     private int dis; // TODO: 이거 설정해주는 함수 만들어야해
-    private int garo;
-    private int sero = 200;
-    private int degree;
-    private int frame_garo = 50;
-    private int frame_sero = 50;
-    private int windowType = 0;
+    public int garo;
+    public int sero = 200;
+    public int degree;
+    public int frame_garo = 50;
+    public int frame_sero = 50;
+    public int windowType = 0;
 
     public boolean isDisSet = false;
 

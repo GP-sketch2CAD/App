@@ -21,7 +21,7 @@ public class StackManager {
 
     Converter converter = new Converter();
     ArrayDeque<DrawElement> drawStack;
-    ArrayDeque<Object> objStack;
+    public ArrayDeque<Object> objStack;
     ArrayList<Point[]> bt = new ArrayList<Point[]>();
     boolean isruq;
     MyView myView;
