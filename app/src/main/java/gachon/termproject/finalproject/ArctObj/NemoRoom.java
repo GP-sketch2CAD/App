@@ -77,16 +77,62 @@ public class NemoRoom {
 
     }
 
+    private void setCoords2() {
+        switch (LCidx) {
+            case LT:
+                innerCords[LT].setCoordByPoint(coords[LCidx], thickness, thickness);
+                innerCords[LB].setCoordByPoint(innerCords[LT], 0, sero);
+                innerCords[RB].setCoordByPoint(innerCords[LT], garo, sero);
+                innerCords[RT].setCoordByPoint(innerCords[LT], garo, 0);
+
+                coords[LB].setCoordByPoint(innerCords[LT], 0 - thickness, sero + thickness);
+                coords[RB].setCoordByPoint(innerCords[LT], garo + thickness, sero + thickness);
+                coords[RT].setCoordByPoint(innerCords[LT], garo + thickness, 0 - thickness);
+                break;
+            case LB:
+                innerCords[LB].setCoordByPoint(coords[LCidx], thickness, -thickness);
+                innerCords[LT].setCoordByPoint(innerCords[LB], 0, -sero);
+                innerCords[RB].setCoordByPoint(innerCords[LB], garo, 0);
+                innerCords[RT].setCoordByPoint(innerCords[LB], garo, -sero);
+
+                coords[LT].setCoordByPoint(innerCords[LB], 0 - thickness, -sero - thickness);
+                coords[RB].setCoordByPoint(innerCords[LB], garo + thickness, 0 + thickness);
+                coords[RT].setCoordByPoint(innerCords[LB], garo + thickness, -sero - thickness);
+                break;
+            case RB:
+                innerCords[RB].setCoordByPoint(coords[LCidx], -thickness, -thickness);
+                innerCords[LT].setCoordByPoint(innerCords[RB], -garo, -sero);
+                innerCords[LB].setCoordByPoint(innerCords[RB], -garo, 0);
+                innerCords[RT].setCoordByPoint(innerCords[RB], 0, -sero);
+
+                coords[LT].setCoordByPoint(innerCords[RB], -garo - thickness, -sero - thickness);
+                coords[LB].setCoordByPoint(innerCords[RB], -garo - thickness, 0 + thickness);
+                coords[RT].setCoordByPoint(innerCords[RB], 0 + thickness, -sero - thickness);
+                break;
+            case RT:
+                innerCords[RT].setCoordByPoint(coords[LCidx], -thickness, thickness);
+                innerCords[LT].setCoordByPoint(innerCords[RT], -garo, 0);
+                innerCords[LB].setCoordByPoint(innerCords[RT], -garo, sero);
+                innerCords[RB].setCoordByPoint(innerCords[RT], 0, sero);
+                coords[LT].setCoordByPoint(innerCords[RT], -garo - thickness, 0 - thickness);
+                coords[LB].setCoordByPoint(innerCords[RT], -garo - thickness, sero + thickness);
+                coords[RB].setCoordByPoint(innerCords[RT], 0 + thickness, sero + thickness);
+                break;
+            default:
+        }
+
+    }
+
     public void setGaro(int garo) {
         this.garo = garo;
         this.isGaroSet = true;
-        setCoords();
+        setCoords2();
     }
 
     public void setSero(int sero) {
         this.sero = sero;
         this.isSeroSet = true;
-        setCoords();
+        setCoords2();
     }
 
     public int getGaro() {
