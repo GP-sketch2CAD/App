@@ -13,7 +13,7 @@ public class NemoWindow {
     private int dis; // TODO: 이거 설정해주는 함수 만들어야해
     private int garo;
     private int sero = 200;
-    private int degree;
+    public int degree;
     private int frame_garo = 50;
     private int frame_sero = 50;
     private int windowType = 0;
@@ -29,7 +29,7 @@ public class NemoWindow {
         if (winIdx % 2 == 0) {
             // 창문이 세로일때
             this.degree = 90;
-            this.garo = (int) ((border[1].y - border[0].y) / StackManager.pointDivideMm);
+            this.dis = (int) ((border[1].y - border[0].y) / StackManager.pointDivideMm);
             if (winIdx == 0) {
                 // 왼쪽 창문일 경우
                 tempDis = (int) ((room.coords[1].getPointY() - border[1].y) / StackManager.pointDivideMm);
@@ -42,7 +42,7 @@ public class NemoWindow {
         } else {
             // 창문이 가로일때
             this.degree = 0;
-            this.garo = (int) ((border[3].x - border[0].x) / StackManager.pointDivideMm);
+            this.dis = (int) ((border[3].x - border[0].x) / StackManager.pointDivideMm);
 
             if (winIdx == 1) {
                 // 아래 창문일 경우
@@ -70,13 +70,19 @@ public class NemoWindow {
         // linkedCoord = LB point
         if (degree == 0) {
             coords[0] = new Coord(coords[1], 0, 0 - sero);
-            coords[2] = new Coord(coords[1], garo, 0);
-            coords[3] = new Coord(coords[1], garo, 0 - sero);
+            coords[2] = new Coord(coords[1], dis, 0);
+            coords[3] = new Coord(coords[1], dis, 0 - sero);
         } else {
-            coords[0] = new Coord(coords[1], 0, 0 - garo);
+            coords[0] = new Coord(coords[1], 0, 0 - dis);
             coords[2] = new Coord(coords[1], sero, 0);
-            coords[3] = new Coord(coords[1], sero, 0 - garo);
+            coords[3] = new Coord(coords[1], sero, 0 - dis);
         }
+    }
+
+    public void setDis(int dis) {
+        this.dis = dis;
+        this.isDisSet = true;
+        setCoords();
     }
 
 }

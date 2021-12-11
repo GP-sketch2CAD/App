@@ -240,6 +240,7 @@ public class StackManager {
                 }
                 if (total > 0) {
                     Digit digit = new Digit(MacGyver.getBorder(de.points), total);
+                    digit.digitinput(this);
                     objStack.push(digit);
                     System.out.println(total);
                 }

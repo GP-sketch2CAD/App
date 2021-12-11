@@ -18,6 +18,7 @@ public class NemoRoom {
 
     public boolean isGaroSet = false;
     public boolean isSeroSet = false;
+    public NemoRoom(){};
 
     public NemoRoom(Point[] border, Coord linkedCoord, int LCidx) {
         this.LCidx = LCidx;
