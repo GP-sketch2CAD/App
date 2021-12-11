@@ -13,11 +13,11 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/llog"
+            android:id="@+id/export"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="log" />
+            android:text="export" />
 
         <Button
             android:id="@+id/undo_btn"
