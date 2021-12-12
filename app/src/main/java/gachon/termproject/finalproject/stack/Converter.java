@@ -21,13 +21,8 @@ public class Converter {
     }
 
     public Object convertPoints2Obj(ArrayList<Point> points, StackManager stackManager) {
-        Object obj = null;
+            Object obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
 
-        if (isNumber(points)) {
-        } else {
-            // 변환 한번 해주자
-            obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
-            // obj = Line2Nemo.nemoNemo((ArrayList<Point>) obj);
             if (isDoor(points, stackManager)) {
                 Log.e("arctOBJ", "door");
                 Point[] triangle = MacGyver.getTriangle(points, stackManager);
@@ -109,20 +104,22 @@ public class Converter {
                 obj = null;
 
             } else if (isWall(points)) {
-                // 만나는 벽이 있는지 확인
-                int LCidx;
-                Point[] border = MacGyver.getBorder(points);
-                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
-                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
-                Coord linkC = new Coord(StackManager.initialCord, g, s);
+                if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() > 4 &&
+                        ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() < 7) {
+                    int LCidx;
+                    Point[] border = MacGyver.getBorder(points);
+                    int g = (int) ((border[0].x) / StackManager.pointDivideMm);
+                    int s = (int) ((border[0].y) / StackManager.pointDivideMm);
+                    Coord linkC = new Coord(StackManager.initialCord, g, s);
 
-                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
-                obj = new NemoRoom(border, linkC, LCidx);
+                    LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+                    obj = new NemoRoom(border, linkC, LCidx);
+                }else
+                    obj = null;
             }
+        return obj;
         }
 
-        return obj;
-    }
 
     private boolean isDoor(ArrayList<Point> points, StackManager sm) {
         if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() == 3 && !sm.objStack.isEmpty()) {
@@ -180,14 +177,8 @@ public class Converter {
     }
 
     private boolean isWall(ArrayList<Point> points) {
-        if (points.size() < 4) return false;
         // TODO: 일단 넓이로 좀 해볼까.....
         return true;
-    }
-
-    private boolean isNumber(ArrayList<Point> points) {
-
-        return false;
     }
 
     private boolean isOverlap(ArrayList<Point> points, StackManager stackManager) {
