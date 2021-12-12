@@ -104,7 +104,7 @@ public class Converter {
                 obj = null;
 
             } else if (isWall(points)) {
-                if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() > 4 &&
+                if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() >= 4 &&
                         ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() < 7) {
                     int LCidx;
                     Point[] border = MacGyver.getBorder(points);
