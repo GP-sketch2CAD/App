@@ -6,8 +6,6 @@ import gachon.termproject.finalproject.stack.Point;
 import gachon.termproject.finalproject.stack.StackManager;
 
 public class NemoWindow {
-    public final int LEFT = 0, BOT = 1, RIGHT = 2, TOP = 3;
-
     public Coord[] coords = new Coord[4];
 
     private int dis; // TODO: 이거 설정해주는 함수 만들어야해

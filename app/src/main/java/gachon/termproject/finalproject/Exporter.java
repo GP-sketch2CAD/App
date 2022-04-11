@@ -35,7 +35,6 @@ public class Exporter {
         this.stackManager = stackManager;
 
     }
-
     public void obj2json() {
         json = new JSONObject();
         JSONObject temp, attr;
