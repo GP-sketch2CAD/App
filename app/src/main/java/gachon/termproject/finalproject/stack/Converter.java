@@ -16,6 +16,7 @@ public class Converter {
 
     Converter() {
     }
+
     //캔버스 위에 그린 그림을 object로 변환
     public Object convertPoints2Obj(ArrayList<Point> points, StackManager stackManager) {
         Object obj = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
@@ -71,7 +72,7 @@ public class Converter {
                     float[] right = new float[]{nr.coords[2].getPointX(), nr.coords[2].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
                     float[] top = new float[]{nr.coords[0].getPointX(), nr.coords[0].getPointY(), nr.coords[3].getPointX(), nr.coords[3].getPointY()};
 
-                        //기존 방의 왼선과 그린 그림의 위, 아래선이 만나면 왼쪽 창문
+                    //기존 방의 왼선과 그린 그림의 위, 아래선이 만나면 왼쪽 창문
                     if (MacGyver.isCross(xSun1, left) && MacGyver.isCross(xSun2, left)) {
                         obj = new NemoWindow(border, nr, 0);
                         break;
@@ -105,19 +106,103 @@ public class Converter {
             obj = null;
 
         } else {
-            // nemo일 때 보강을 좀 해야할 듯 (어떻게 하면 네모 형태로 그려졌을 때만 방이 만들어질까)
-            if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() >= 4 &&
-                    ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() < 7) {
+            // 1. 벽(획수 단위로 줄이고) 포인트 리스트에서 라인 리스트로 만들어
+            ArrayList<Point> beforeLine = (ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon);
+            ArrayList<ArrayList<Point>> lines = new ArrayList<>();
+            for (int i = 0; i < beforeLine.size() - 1; i += 1) {
+                // 획이 시작한 포인트는 체크가 false임
+                // -> 획이 바뀌었을 때 벽으로 들어가지 않도록 하는 것임
+                if (beforeLine.get(i + 1).check) {
+                    ArrayList<Point> line = new ArrayList<>();
+                    line.add(beforeLine.get(i));
+                    line.add(beforeLine.get(i + 1));
+                    lines.add(line);
+                }
+            }
+            // 2. 라인 리스트에서 순서대로 선이 그어지도록 정렬
+            // 각도도 계산해서 정리해버리자
+            double minLen, len;
+            int minIdx;
+            boolean isSwap, isNemoRoom = true;
+            for (int i = 0; i < lines.size() - 1; i += 1) {
+                // 현재선 끝점과 다음선 시작점이 연결되도록 한다
+                if (lines.get(i).get(1) != lines.get(i + 1).get(0)) {
+                    // 연결되는 점을 찾아야지, 주소값이 다르므로 거리로 찾아야 한다.
+                    minLen = -1;
+                    isSwap = false;
+                    minIdx = i + 1;
+                    for (int j = i + 1; j < lines.size() - 1; j += 1) {
+                        len = Line2Straight.distanceBetweenPoints(lines.get(i).get(1).x, lines.get(i).get(1).y,
+                                lines.get(j).get(0).x, lines.get(j).get(0).y);
+                        if (minLen < 0 || minLen > len) {
+                            isSwap = false;
+                            minLen = len;
+                            minIdx = j;
+                        }
+                        len = Line2Straight.distanceBetweenPoints(lines.get(i).get(1).x, lines.get(i).get(1).y,
+                                lines.get(j).get(1).x, lines.get(j).get(1).y);
+                        if (minLen < 0 || minLen > len) {
+                            isSwap = true;
+                            minLen = len;
+                            minIdx = j;
+                        }
+                    }
+                    if (isSwap) {
+                        // 선의 시작점과 끝점은 스왑
+                        Point t = lines.get(minIdx).get(0);
+                        lines.get(minIdx).set(0, lines.get(minIdx).get(1));
+                        lines.get(minIdx).set(1, t);
+                    }
+
+                    // 선끼리 스왑
+                    ArrayList<Point> temp = lines.get(i + 1);
+                    lines.set(i + 1, lines.get(minIdx));
+                    lines.set(minIdx, temp);
+                }
+
+                // 각도 계산해서 90도 이면 값 수정
+                if (MacGyver.isXLinePal(lines.get(i))) {
+                    lines.get(i).get(1).y = lines.get(i).get(0).y;
+                } else if (MacGyver.isYLinePal(lines.get(i))) {
+                    lines.get(i).get(1).x = lines.get(i).get(0).x;
+                } else {
+                    isNemoRoom = false;
+                }
+            }
+
+            // 3. 벽이 네모인지 아닌지 판단해서 네모면 NemoRoom으로
+            // 아니면 그냥 Wall로 만들자
+            if (isNemoRoom && lines.size() == 4) {
                 int LCidx;
-                Point[] border = MacGyver.getBorder(points);
+                ArrayList<Point> pps = new ArrayList<>();
+                pps.add(lines.get(0).get(0));
+                for (ArrayList<Point> l : lines) {
+                    pps.add(l.get(1));
+                }
+                Point[] border = MacGyver.getBorder(pps);
                 int g = (int) ((border[0].x) / StackManager.pointDivideMm);
                 int s = (int) ((border[0].y) / StackManager.pointDivideMm);
                 Coord linkC = new Coord(StackManager.initialCord, g, s);
 
                 LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
                 obj = new NemoRoom(border, linkC, LCidx);
-            } else
-                obj = null;
+            } else {
+
+            }
+
+//            // nemo일 때 보강을 좀 해야할 듯 (어떻게 하면 네모 형태로 그려졌을 때만 방이 만들어질까)
+//            if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() >= 4 &&
+//                    ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() < 7) {
+//                int LCidx;
+//                Point[] border = MacGyver.getBorder(points);
+//                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
+//                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
+//                Coord linkC = new Coord(StackManager.initialCord, g, s);
+//
+//                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
+//                obj = new NemoRoom(border, linkC, LCidx);
+//            } else
+//                obj = null;
         }
         return obj;
     }
@@ -133,6 +218,7 @@ public class Converter {
         }
         return false;
     }
+
     // 그림의 border를 가져와 기존 방의 벽과 비교하여 벽의 양옆으로 두 개의 점씩 있으면 창문으로 인식.
     private boolean isWindow(ArrayList<Point> points, StackManager sm) {
         int LB = 0, LT = 1, RT = 2;
@@ -153,11 +239,13 @@ public class Converter {
                 }
                 // 문 그릴 때 벽을 벽 통과해서 그리면 문이 창문으로 인식되는 경우가 있어서 우선 점 4개 이상이면 적어도 사각형을 나타내는 거라서 추가 조건 넣음.
                 // 위에 nemo보강하면 여기도 같이 바꿔줘야 할듯
-                if (count == 2 && ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() >3) return true;
+                if (count == 2 && ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() > 3)
+                    return true;
             }
         }
         return false;
     }
+
     // 그림의 border 내부에 3개 이상의 대각선이 그려지면 기둥으로 인식
     private boolean isColumn(ArrayList<Point> points) {
         Point[] border = MacGyver.getBorder(points);
@@ -231,6 +319,7 @@ public class Converter {
         return false;
     }
 }
+
 // 그림의 좌표를 얻기 위해 더귤라스 파커 알고리즘을 이용.
 class Line2Straight {
 
@@ -241,7 +330,7 @@ class Line2Straight {
         return Math.pow(x, 2);
     }
 
-    private static final double distanceBetweenPoints(float vx, float vy, float wx, float wy) {
+    public static final double distanceBetweenPoints(float vx, float vy, float wx, float wy) {
         return sqr(vx - wx) + sqr(vy - wy);
     }
 

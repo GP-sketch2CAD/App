@@ -3,6 +3,7 @@ package gachon.termproject.finalproject.stack;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import gachon.termproject.finalproject.ArctObj.Coord;
 import gachon.termproject.finalproject.ArctObj.NemoRoom;
@@ -165,7 +166,7 @@ public class MacGyver {
         for (Object obj : stackManager.objStack) {
             if (obj instanceof NemoRoom) {
                 for (Coord c : ((NemoRoom) obj).coords) {
-                    for (i = 0; i < 4; i++) {
+                    for (i = 0; i < border.length; i++) {
                         dis = getDistance(c, border[i]);
                         if (dis < threshold && (minDistance < 0 || minDistance > dis)) {
                             idx = i;
@@ -381,5 +382,25 @@ public class MacGyver {
         if (ccw > 0) return 1;
         else if (ccw < 0) return -1;
         else return 0;
+    }
+
+    public static boolean isXLinePal(List<Point> line) {
+        Point a = new Point(line.get(1).x - line.get(0).x, line.get(1).y - line.get(0).y);
+        double radian = (a.y) /(Math.pow(a.x * a.x + a.y * a.y, 0.5));
+        int angle =  Math.abs((int)(radian * 180 / Math.PI));
+        angle %= 90;
+
+        if (angle < 15 || angle > 75) return true;
+        return false;
+    }
+
+    public static boolean isYLinePal(List<Point> line) {
+        Point a = new Point(line.get(1).x - line.get(0).x, line.get(1).y - line.get(0).y);
+        double radian = (a.x) /(Math.pow(a.x * a.x + a.y * a.y, 0.5));
+        int angle =  Math.abs((int)(radian * 180 / Math.PI));
+        angle %= 90;
+
+        if (angle < 15 || angle > 75) return true;
+        return false;
     }
 }
