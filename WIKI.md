@@ -22,6 +22,8 @@ If you draw a picture and press the 'Export' button, your picture will be conver
  - targetSdkVersion : 30
 
 ## CNN model Version?
+추가할 부분 있으면 해주시면되고, 딱히 없으면 빼셔도 됩니당
+
 
 ## Overall Intermal Structure
 <img src= "https://user-images.githubusercontent.com/60349584/168165384-b5ded98c-10dd-4f99-950c-2a3c0d3d6a7d.png" title="overall" alt="overall"></img>
@@ -58,8 +60,10 @@ If you draw a picture and press the 'Export' button, your picture will be conver
 
 
 ## Manual for Users(API)
+일단 공간만 만들어놨어요
 
 ## Manual for Developers(API)
+여기도 마찬가지로 일단 공간만 
 
 ## Team
 | |최찬영|정호진|김현민|박승민|
