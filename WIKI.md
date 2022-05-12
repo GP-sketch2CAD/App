@@ -24,7 +24,7 @@ If you draw a picture and press the 'Export' button, your picture will be conver
 ## CNN model Version?
 
 ## Overall Intermal Structure
-![overall](https://user-images.githubusercontent.com/60349584/168165384-b5ded98c-10dd-4f99-950c-2a3c0d3d6a7d.png)
+<img src= "https://user-images.githubusercontent.com/60349584/168165384-b5ded98c-10dd-4f99-950c-2a3c0d3d6a7d.png" title="overall" alt="overall"></img>
 
 
 ## Using technology
