@@ -1,7 +1,6 @@
 package gachon.termproject.finalproject.stack;
 
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,7 +168,6 @@ public class Converter {
                     isNemoRoom = false;
                 }
             }
-
             // 3. 벽이 네모인지 아닌지 판단해서 네모면 NemoRoom으로
             // 아니면 그냥 Wall로 만들자
             if (isNemoRoom && lines.size() == 4) {
@@ -187,22 +185,9 @@ public class Converter {
                 LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
                 obj = new NemoRoom(border, linkC, LCidx);
             } else {
-
+                obj = null;
             }
 
-//            // nemo일 때 보강을 좀 해야할 듯 (어떻게 하면 네모 형태로 그려졌을 때만 방이 만들어질까)
-//            if (((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() >= 4 &&
-//                    ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() < 7) {
-//                int LCidx;
-//                Point[] border = MacGyver.getBorder(points);
-//                int g = (int) ((border[0].x) / StackManager.pointDivideMm);
-//                int s = (int) ((border[0].y) / StackManager.pointDivideMm);
-//                Coord linkC = new Coord(StackManager.initialCord, g, s);
-//
-//                LCidx = MacGyver.getShortestRoomCord(stackManager, border, linkC);
-//                obj = new NemoRoom(border, linkC, LCidx);
-//            } else
-//                obj = null;
         }
         return obj;
     }
@@ -239,14 +224,14 @@ public class Converter {
                 }
                 // 문 그릴 때 벽을 벽 통과해서 그리면 문이 창문으로 인식되는 경우가 있어서 우선 점 4개 이상이면 적어도 사각형을 나타내는 거라서 추가 조건 넣음.
                 // 위에 nemo보강하면 여기도 같이 바꿔줘야 할듯
-                if (count == 2 && ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() > 3)
+                if (count == 2 && ((ArrayList<Point>) Line2Straight.douglasPeucker((List<Point>) points, epsilon)).size() > 4)
                     return true;
             }
         }
         return false;
     }
 
-    // 그림의 border 내부에 3개 이상의 대각선이 그려지면 기둥으로 인식
+    // 그림의 border 내부에 3개의 대각선이 그려지면 기둥으로 인식
     private boolean isColumn(ArrayList<Point> points) {
         Point[] border = MacGyver.getBorder(points);
         ArrayList<Point> sLine = (ArrayList<Point>) Line2Straight.douglasPeucker(points, epsilon / 2);
@@ -261,16 +246,9 @@ public class Converter {
                 if (MacGyver.isCross(RTLB, ml)) check++;
             }
         }
-        if (check > 2) return true;
+        if (check > 3) return true;
         return false;
     }
-
-    /* //isWall의 역할이 없음!!!!!!
-    private boolean isWall(ArrayList<Point> points) {
-        // TODO: 일단 넓이로 좀 해볼까.....
-        return true;
-    }
-    */
 
     //border의 x,y좌표가 기존 방의 x, y좌표 보다 작으면 안에있는 사각형, 반대면 큰 사각형
     private boolean isOverlap(ArrayList<Point> points, StackManager stackManager) {
